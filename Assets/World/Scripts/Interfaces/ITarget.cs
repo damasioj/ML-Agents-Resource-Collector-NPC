@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// deprecated
+/// </summary>
 public interface ITarget 
 {
-    Vector3 GetLocation();
+    Vector3 Location { get; set; }
 }

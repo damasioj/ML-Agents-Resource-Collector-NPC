@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6456069308419859421}
+  - component: {fileID: -2304561527193126198}
   m_Layer: 0
   m_Name: ResourceDepot
   m_TagString: Untagged
@@ -24,13 +25,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3031238411839440790}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.512718, y: -19.157654, z: 0.8294172}
+  m_LocalPosition: {x: 5.512718, y: -19.83, z: 0.39}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7005978412604235726}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-2304561527193126198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3031238411839440790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a06a97de80797d643b31d48e7abad98d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3450661121650396508
 GameObject:
   m_ObjectHideFlags: 0
@@ -45,7 +58,7 @@ GameObject:
   - component: {fileID: 1483852705983012376}
   m_Layer: 0
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: goal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -58,7 +71,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3450661121650396508}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -12.572718, y: 17.927654, z: -0.1094172}
+  m_LocalPosition: {x: -0.17, y: 0.28, z: 0.05}
   m_LocalScale: {x: 3, y: 1, z: 3}
   m_Children: []
   m_Father: {fileID: 6456069308419859421}
@@ -118,7 +131,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3450661121650396508}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}

@@ -25,11 +25,9 @@ public class CollectorAcademy : MonoBehaviour
         targets = gameObject.GetComponentsInChildren<BaseTarget>().ToList();
         goal = gameObject.GetComponentInChildren<BaseGoal>();
 
-        agents.ForEach(a => a.boundaryLimits = boundaryLimits);
-        targets.ForEach(t => t.boundaryLimits = boundaryLimits);
+        agents.ForEach(a => a.BoundaryLimits = boundaryLimits);
+        targets.ForEach(t => t.BoundaryLimits = boundaryLimits);
         goal.goalLimits = GetGoalLimits();
-
-        //collectorAcademy.AutomaticSteppingEnabled = true;
     }
 
     private void FixedUpdate()
@@ -44,6 +42,7 @@ public class CollectorAcademy : MonoBehaviour
     {
         goal.Reset();
         targets.Where(x => x.TargetHit).ToList().ForEach(t => t.Reset());
+        SetResourceRequirements();
     }
 
     private Dictionary<string, float> GetBoundaryLimits()
@@ -97,5 +96,21 @@ public class CollectorAcademy : MonoBehaviour
         };
 
         return limits;
+    }
+
+    // temporary setup used for training
+    private void SetResourceRequirements()
+    {
+        int woodAmount = UnityEngine.Random.Range(1, 5);
+        int stoneAmount = UnityEngine.Random.Range(1, 5);
+
+        var requirements = new Dictionary<Type, int>
+        {
+            [typeof(WoodResource)] = woodAmount,
+            [typeof(StoneResource)] = stoneAmount
+        };
+
+        goal.SetResourceRequirements(requirements);
+        
     }
 }

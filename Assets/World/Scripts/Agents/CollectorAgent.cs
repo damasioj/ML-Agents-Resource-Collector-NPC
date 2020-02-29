@@ -6,55 +6,55 @@ using UnityEngine;
 public class CollectorAgent : Agent
 {
     private Vector3 maxVelocity;
-    private bool reachedBoundary;
     private Rigidbody rBody;
+    private BaseResource resource;
     //private BehaviorParameters policy;
 
     public float speed;
     public BaseTarget[] targets;
-    public ResourceDepot goal;
+    public BaseGoal goal;
 
     #region properties
-    private bool hasResource { get; set; }
-    public Dictionary<string, float> boundaryLimits { get; set; }
+    private bool HasResource => resource is object;
+    [HideInInspector] public Dictionary<string, float> BoundaryLimits { get; set; }
     #endregion
 
-    // Start is called before the first frame update
     void Start()
     {
-        hasResource = false;
-        reachedBoundary = false;
         rBody = GetComponent<Rigidbody>();
         maxVelocity = new Vector3(speed, 0f, speed);
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other) // TODO : refactor
     {
         switch (other.tag)
         {
             case "goal":
-                if (hasResource)
+                if (HasResource)
                 {
-                    AddReward(1.0f);
-                    hasResource = false;
+                    AddReward(0.5f);
+                    var deposit = other.gameObject.GetComponent(typeof(BaseGoal)) as BaseGoal;
+                    deposit.AddResource(ref resource);
+                    ValidateGoalComplete();
                     Debug.Log($"Current Reward: {GetCumulativeReward()}");
                 }
                 break;
             case "target":
-                if (!hasResource)
+                if (!HasResource)
                 {
-                    hasResource = true;
-                    AddReward(0.3f);
-                    Debug.Log($"Current Reward: {GetCumulativeReward()}");
+                    var target = other.gameObject.GetComponent(typeof(BaseTarget)) as BaseTarget;
+                    resource = target.GetResource();
+
+                    if (resource is object)
+                    {
+                        AddReward(0.3f);
+                        Debug.Log($"Current Reward: {GetCumulativeReward()}");
+                    }
                 }
                 break;
             case "boundary":
-                if (true)
-                {
-                    reachedBoundary = true;
-                    SubtractReward(0.6f);
-                    Done();
-                }
+                SubtractReward(0.5f);
+                Done();
                 break;
         }
     }
@@ -68,15 +68,7 @@ public class CollectorAgent : Agent
         rBody.velocity = Vector3.zero;
         transform.localPosition = new Vector3(0, 1, 0);
 
-        hasResource = false;
-        reachedBoundary = false;
-
-        //ResetTargets();
-    }
-
-    private void ResetTargets() // refactor to academy
-    {
-        targets.Where(x => x.TargetHit).ToList().ForEach(t => t.Reset());
+        resource = null;
     }
 
     //public override void CollectObservations(VectorSensor sensor)
@@ -100,16 +92,19 @@ public class CollectorAgent : Agent
     public override void CollectObservations()
     {
         // boundaries
-        boundaryLimits.Values.ToList().ForEach(b => AddVectorObs(b)); //4
+        BoundaryLimits.Values.ToList().ForEach(b => AddVectorObs(b)); //4
 
         // target locations
         targets.ToList().ForEach(t => AddVectorObs(t.Location)); //3 * n
+        // TODO : add the type of resource each target holds ... how to associate ?
 
-        // goal location
+        // goal data
         AddVectorObs(goal.transform.position); //3
+        goal.GetResourcesRequired().Values.ToList().ForEach(x => AddVectorObs(x)); // tower = 2, depot = 1
+        // TODO : add the type of resource necessary
 
         // Agent data
-        AddVectorObs(hasResource); //1
+        AddVectorObs(HasResource); //1
         AddVectorObs(transform.position); //3
         AddVectorObs(rBody.velocity.x); //1
         AddVectorObs(rBody.velocity.z); //1
@@ -130,6 +125,16 @@ public class CollectorAgent : Agent
         if (rBody.velocity.magnitude < maxVelocity.magnitude)
         {
             rBody.velocity += controlSignal * speed;
+        }
+    }
+
+    protected void ValidateGoalComplete()
+    {
+        if(goal.IsComplete)
+        {
+            AddReward(5.0f);            
+            Debug.Log($"Current Reward: {GetCumulativeReward()}");
+            Done();
         }
     }
 

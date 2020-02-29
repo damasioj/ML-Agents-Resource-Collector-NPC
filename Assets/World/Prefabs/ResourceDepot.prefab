@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 6456069308419859421}
   - component: {fileID: -2304561527193126198}
+  - component: {fileID: 2957865943121722493}
   m_Layer: 0
   m_Name: ResourceDepot
-  m_TagString: Untagged
+  m_TagString: goal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -44,6 +45,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a06a97de80797d643b31d48e7abad98d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxCapacity: 0
+--- !u!65 &2957865943121722493
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3031238411839440790}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.9764447, y: 0.9893265, z: 3.0465488}
+  m_Center: {x: -0.15022969, y: 0.27441597, z: 0.044808388}
 --- !u!1 &3450661121650396508
 GameObject:
   m_ObjectHideFlags: 0
@@ -55,7 +70,6 @@ GameObject:
   - component: {fileID: 7005978412604235726}
   - component: {fileID: 950811043382577804}
   - component: {fileID: 701807678850602571}
-  - component: {fileID: 1483852705983012376}
   m_Layer: 0
   m_Name: Cube
   m_TagString: goal
@@ -123,16 +137,3 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &1483852705983012376
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3450661121650396508}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}

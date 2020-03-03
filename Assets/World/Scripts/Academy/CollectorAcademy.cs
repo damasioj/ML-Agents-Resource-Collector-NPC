@@ -101,8 +101,8 @@ public class CollectorAcademy : MonoBehaviour
     // temporary setup used for training
     private void SetResourceRequirements()
     {
-        int woodAmount = UnityEngine.Random.Range(1, 5);
-        int stoneAmount = UnityEngine.Random.Range(1, 5);
+        int woodAmount = UnityEngine.Random.Range(1, 3);
+        int stoneAmount = UnityEngine.Random.Range(1, 3);
 
         var requirements = new Dictionary<Type, int>
         {

@@ -32,7 +32,7 @@ public class CollectorAcademy : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (collectorAcademy.GetStepCount() % 3 == 0)
+        if (collectorAcademy.StepCount % 3 == 0)
         {
             agents.ForEach(a => a.RequestDecision());
         }

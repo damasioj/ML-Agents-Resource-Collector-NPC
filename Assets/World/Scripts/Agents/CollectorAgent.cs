@@ -1,4 +1,5 @@
 ﻿using MLAgents;
+using MLAgents.Sensors;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -71,44 +72,45 @@ public class CollectorAgent : Agent
         resource = null;
     }
 
-    //public override void CollectObservations(VectorSensor sensor)
-    //{
-    //    // boundaries
-    //    boundaryLimits.Values.ToList().ForEach(b => sensor.AddObservation(b)); //4
-
-    //    // target locations
-    //    targets.ToList().ForEach(t => sensor.AddObservation(t.Location)); //3 * n
-
-    //    // goal location
-    //    sensor.AddObservation(goal.transform.position); //3
-
-    //    // Agent data
-    //    sensor.AddObservation(hasResource); //1
-    //    sensor.AddObservation(transform.position); //3
-    //    sensor.AddObservation(rBody.velocity.x); //1
-    //    sensor.AddObservation(rBody.velocity.z); //1
-    //}
-
-    public override void CollectObservations()
+    public override void CollectObservations(VectorSensor sensor)
     {
         // boundaries
-        BoundaryLimits.Values.ToList().ForEach(b => AddVectorObs(b)); //4
+        BoundaryLimits.Values.ToList().ForEach(b => sensor.AddObservation(b)); //4
 
         // target locations
-        targets.ToList().ForEach(t => AddVectorObs(t.Location)); //3 * n
-        // TODO : add the type of resource each target holds ... how to associate ?
+        targets.ToList().ForEach(t => sensor.AddObservation(t.Location)); //3 * n
 
-        // goal data
-        AddVectorObs(goal.transform.position); //3
-        goal.GetResourcesRequired().Values.ToList().ForEach(x => AddVectorObs(x)); // tower = 2, depot = 1
-        // TODO : add the type of resource necessary
+        // goal location
+        sensor.AddObservation(goal.transform.position); //3
+        goal.GetResourcesRequired().Values.ToList().ForEach(x => sensor.AddObservation(x)); // tower = 2, depot = 1
 
         // Agent data
-        AddVectorObs(HasResource); //1
-        AddVectorObs(transform.position); //3
-        AddVectorObs(rBody.velocity.x); //1
-        AddVectorObs(rBody.velocity.z); //1
+        sensor.AddObservation(HasResource); //1
+        sensor.AddObservation(transform.position); //3
+        sensor.AddObservation(rBody.velocity.x); //1
+        sensor.AddObservation(rBody.velocity.z); //1
     }
+
+    //public override void CollectObservations()
+    //{
+    //    // boundaries
+    //    BoundaryLimits.Values.ToList().ForEach(b => AddVectorObs(b)); //4
+
+    //    // target locations
+    //    targets.ToList().ForEach(t => AddVectorObs(t.Location)); //3 * n
+    //    // TODO : add the type of resource each target holds ... how to associate ?
+
+    //    // goal data
+    //    AddVectorObs(goal.transform.position); //3
+    //    goal.GetResourcesRequired().Values.ToList().ForEach(x => AddVectorObs(x)); // tower = 2, depot = 1
+    //    // TODO : add the type of resource necessary
+
+    //    // Agent data
+    //    AddVectorObs(HasResource); //1
+    //    AddVectorObs(transform.position); //3
+    //    AddVectorObs(rBody.velocity.x); //1
+    //    AddVectorObs(rBody.velocity.z); //1
+    //}
 
     public override void AgentAction(float[] vectorAction)
     {

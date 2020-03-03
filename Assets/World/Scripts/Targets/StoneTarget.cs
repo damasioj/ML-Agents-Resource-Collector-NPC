@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 // possibly could be refactored all into basetarget class
 public class StoneTarget : BaseTarget
@@ -22,11 +23,11 @@ public class StoneTarget : BaseTarget
         return StoneResources.Take();
     }
 
-    public override void SetResourceAmount(Type resource, int amount)
+    public override void SetResourceAmount(Dictionary<Type, int> resourceData)
     {
-        if (resource == typeof(StoneResource))
+        if (resourceData.ContainsKey(typeof(StoneResource)))
         {
-            stoneAmount = amount;
+            stoneAmount = resourceData[typeof(StoneResource)];
             ResetCollection();
         }
     }

@@ -111,6 +111,6 @@ public class CollectorAcademy : MonoBehaviour
         };
 
         goal.SetResourceRequirements(requirements);
-        
+        targets.ForEach(t => t.SetResourceAmount(requirements));
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 // possibly could be refactored all into basetarget class
 public class TreeTarget : BaseTarget
@@ -22,11 +23,11 @@ public class TreeTarget : BaseTarget
         return WoodResources.Take();
     }
 
-    public override void SetResourceAmount(Type resource, int amount)
+    public override void SetResourceAmount(Dictionary<Type, int> resourceData)
     {
-        if (resource == typeof(WoodResource))
+        if (resourceData.ContainsKey(typeof(WoodResource)))
         {
-            woodAmount = amount;
+            woodAmount = resourceData[typeof(WoodResource)];
             ResetCollection();
         }
     }

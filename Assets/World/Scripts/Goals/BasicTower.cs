@@ -10,6 +10,13 @@ public class BasicTower : BaseGoal
     [SerializeField] private int woodRequired;
     [SerializeField] private int stoneRequired;
 
+    public override void Reset()
+    {
+        woodResources = new ResourceCollection<WoodResource>();
+        stoneResources = new ResourceCollection<StoneResource>();
+        base.Reset();
+    }
+
     public override bool IsComplete
     {
         get

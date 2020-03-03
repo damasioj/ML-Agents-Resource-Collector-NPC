@@ -17,6 +17,13 @@ The following are the goals of this project:
 - [ ] 2 Agents: collecting multiple different resources ...
 - [ ] 2 Agents: collecting multiple different resources in a specific order ...
 
+# Requirements
+
+To run this environment, you will need:
+- Python 3.6.1 or greater
+	- mlagents 0.14.1/0.15.0-dev0 package development version
+- Unity 2019.2.0f1 or greater
+
 # Current limitations / issues
 
 ## Data Association
@@ -32,3 +39,4 @@ As mentioned with issues in associating the data to specific objects, this creat
 ### Flexible requirements
 
 It's still complex to solve issues where the goal is essentially the same but the requirements change. For instance, we may have a Builder agent that is currently tasked to build a house. We feed him the data that to build the house it requires 5 wood and 2 stone resources. We also provide information of the locations to gather these resources. After building the house, he's tasked with building a tower, which requires 5 wood, 1 stone, and 2 steel. The goal is the same: build a structure, but the requirements have now changed and include "steel". In this scenario, the Builder agent would need to have an input value for every kind of possible resource that the goals may require. Again, it's possible to overcome this by fixating the input data, but even by reducing the input data through OOP and using base classes this may be highly impractical/complicated in a actual game scenario. 
+

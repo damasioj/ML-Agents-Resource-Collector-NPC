@@ -54,8 +54,12 @@ public class CollectorAgent : Agent
                 }
                 break;
             case "boundary":
-                SubtractReward(0.5f);
-                Done();
+                if (!IsDone)
+                {
+                    SubtractReward(0.1f);
+                    Debug.Log($"Current Reward: {GetCumulativeReward()}");
+                    Done();
+                }
                 break;
         }
     }
@@ -75,7 +79,7 @@ public class CollectorAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         // boundaries
-        BoundaryLimits.Values.ToList().ForEach(b => sensor.AddObservation(b)); //4
+        //BoundaryLimits.Values.ToList().ForEach(b => sensor.AddObservation(b)); //4
 
         // target locations
         targets.ToList().ForEach(t => sensor.AddObservation(t.Location)); //3 * n

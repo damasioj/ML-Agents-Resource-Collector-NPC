@@ -365,6 +365,14 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Unfortunately the update did not fix the bugs with steps continuing after calling Done.
+        /// </summary>
+        public bool IsDone
+        {
+            get { return m_Info.done; }
+        }
+
+        /// <summary>
         /// Overrides the current step reward of the agent and updates the episode
         /// reward accordingly.
         /// </summary>

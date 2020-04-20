@@ -137,7 +137,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!81 &135369706
 AudioListener:
   m_ObjectHideFlags: 0
@@ -393,11 +393,6 @@ PrefabInstance:
       propertyPath: goal
       value: 
       objectReference: {fileID: 1365603740}
-    - target: {fileID: 3301140445356842710, guid: d8406f6bc06236743abb5cd1e4f898a7,
-        type: 3}
-      propertyPath: maxStep
-      value: 3000
-      objectReference: {fileID: 0}
     - target: {fileID: 9181444950600204467, guid: d8406f6bc06236743abb5cd1e4f898a7,
         type: 3}
       propertyPath: stoneAmount

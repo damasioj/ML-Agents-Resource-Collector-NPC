@@ -40,8 +40,12 @@ public class CollectorAcademy : MonoBehaviour
 
     private void EnvironmentReset()
     {
+        if (goal.IsComplete)
+        {
+            targets.ToList().ForEach(t => t.Reset());
+        }
+
         goal.Reset();
-        targets.Where(x => x.TargetHit).ToList().ForEach(t => t.Reset());
         SetResourceRequirements();
     }
 
@@ -101,8 +105,8 @@ public class CollectorAcademy : MonoBehaviour
     // temporary setup used for training
     private void SetResourceRequirements()
     {
-        int woodAmount = UnityEngine.Random.Range(1, 4);
-        int stoneAmount = UnityEngine.Random.Range(1, 4);
+        int woodAmount = UnityEngine.Random.Range(1, 3);
+        int stoneAmount = UnityEngine.Random.Range(1, 3);
 
         var requirements = new Dictionary<Type, int>
         {

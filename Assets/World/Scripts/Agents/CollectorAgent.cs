@@ -1,4 +1,5 @@
-﻿using MLAgents;
+﻿using Google.Protobuf.WellKnownTypes;
+using MLAgents;
 using MLAgents.Sensors;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,15 +10,31 @@ public class CollectorAgent : Agent
     private Vector3 maxVelocity;
     private Rigidbody rBody;
     private BaseResource resource;
-    //private BehaviorParameters policy;
 
     public float speed;
-    public BaseTarget[] targets;
     public BaseGoal goal;
 
     #region properties
     private bool HasResource => resource is object;
+
+    [HideInInspector] public bool IsDoneJob { get; private set; }    
+
     [HideInInspector] public Dictionary<string, float> BoundaryLimits { get; set; }
+    
+    private BaseTarget target;
+    [HideInInspector] public BaseTarget Target
+    {
+        get
+        {
+            return target;
+        }
+        set
+        {
+            target = value;
+            IsDoneJob = false;
+            Debug.Log($"Current target: {target.gameObject.name}, Number required: {target.ResourceCount}");
+        }
+    }
     #endregion
 
     void Start()
@@ -36,6 +53,7 @@ public class CollectorAgent : Agent
                     AddReward(0.5f);
                     var deposit = other.gameObject.GetComponent(typeof(BaseGoal)) as BaseGoal;
                     deposit.AddResource(ref resource);
+                    ValidateJobComplete();
                     ValidateGoalComplete();
                     Debug.Log($"Current Reward: {GetCumulativeReward()}");
                 }
@@ -46,11 +64,11 @@ public class CollectorAgent : Agent
                     var target = other.gameObject.GetComponent(typeof(BaseTarget)) as BaseTarget;
                     resource = target.GetResource();
 
-                    if (resource is object)
-                    {
-                        AddReward(0.3f);
-                        Debug.Log($"Current Reward: {GetCumulativeReward()}");
-                    }
+                    //if (resource is object)
+                    //{
+                    //    AddReward(0.3f);
+                    //    Debug.Log($"Current Reward: {GetCumulativeReward()}");
+                    //}
                 }
                 break;
             case "boundary":
@@ -68,7 +86,6 @@ public class CollectorAgent : Agent
     {
         Debug.Log($"Reward: {GetCumulativeReward()}");
 
-        // If the Agent fell, zero its momentum
         rBody.angularVelocity = Vector3.zero;
         rBody.velocity = Vector3.zero;
         transform.localPosition = new Vector3(0, 1, 0);
@@ -81,40 +98,33 @@ public class CollectorAgent : Agent
         // boundaries
         //BoundaryLimits.Values.ToList().ForEach(b => sensor.AddObservation(b)); //4
 
-        // target locations
-        targets.ToList().ForEach(t => sensor.AddObservation(t.Location)); //3 * n
+        // target location
+        sensor.AddObservation(target.transform.position.x); //1
+        sensor.AddObservation(target.transform.position.z); //1
 
-        // goal location
-        sensor.AddObservation(goal.transform.position); //3
-        goal.GetResourcesRequired().Values.ToList().ForEach(x => sensor.AddObservation(x)); // tower = 2, depot = 1
+        // goal info
+        sensor.AddObservation(goal.transform.position.x); //1
+        sensor.AddObservation(goal.transform.position.z); //1
+        sensor.AddObservation(goal.GetResourcesRequired().First(g => g.Key == target.GetResourceType()).Value); //1 -- # required of current resource
 
         // Agent data
+        sensor.AddObservation(IsDoneJob);
         sensor.AddObservation(HasResource); //1
-        sensor.AddObservation(transform.position); //3
+        sensor.AddObservation(transform.position.x); //1
+        sensor.AddObservation(transform.position.z); //1
         sensor.AddObservation(rBody.velocity.x); //1
         sensor.AddObservation(rBody.velocity.z); //1
+
+        // for debugging only
+        //if (this.StepCount % 300 == 0)
+        //{
+        //    Debug.Log($"TARGET || Name: {target.name} X: {target.transform.position.x}, Z: {target.transform.position.z}");
+        //    Debug.Log($"GOAL || X: {goal.transform.position.x}, Z: {goal.transform.position.z}");
+        //    Debug.Log($"GOAL || Resources Required: {goal.GetResourcesRequired().First(g => g.Key == target.GetResourceType()).Value}");
+        //    Debug.Log($"AGENT || IsDoneJob: {IsDoneJob}, HasResource: {HasResource}");
+        //    Debug.Log($"AGENT || X: {transform.position.x}, Z: {transform.position.z}, Velocity X: {rBody.velocity.x}, Velocity Z: {rBody.velocity.z}");
+        //}
     }
-
-    //public override void CollectObservations()
-    //{
-    //    // boundaries
-    //    BoundaryLimits.Values.ToList().ForEach(b => AddVectorObs(b)); //4
-
-    //    // target locations
-    //    targets.ToList().ForEach(t => AddVectorObs(t.Location)); //3 * n
-    //    // TODO : add the type of resource each target holds ... how to associate ?
-
-    //    // goal data
-    //    AddVectorObs(goal.transform.position); //3
-    //    goal.GetResourcesRequired().Values.ToList().ForEach(x => AddVectorObs(x)); // tower = 2, depot = 1
-    //    // TODO : add the type of resource necessary
-
-    //    // Agent data
-    //    AddVectorObs(HasResource); //1
-    //    AddVectorObs(transform.position); //3
-    //    AddVectorObs(rBody.velocity.x); //1
-    //    AddVectorObs(rBody.velocity.z); //1
-    //}
 
     public override void AgentAction(float[] vectorAction)
     {
@@ -131,6 +141,25 @@ public class CollectorAgent : Agent
         if (rBody.velocity.magnitude < maxVelocity.magnitude)
         {
             rBody.velocity += controlSignal * speed;
+        }
+
+        if (controlSignal.x + controlSignal.z == 0)
+        {
+            rBody.angularVelocity = Vector3.zero;
+            rBody.velocity = Vector3.zero;
+        }
+    }
+
+    /// <summary>
+    /// Checks if the goal has the required number of resources from current target.
+    /// </summary>
+    protected void ValidateJobComplete()
+    {
+        var isResourceRequired = goal.GetResourcesRequired().Any(g => g.Key == target.GetResourceType() && g.Value > 0);
+
+        if (!isResourceRequired)
+        {
+            IsDoneJob = true;
         }
     }
 

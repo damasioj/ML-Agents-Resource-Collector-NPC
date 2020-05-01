@@ -5,17 +5,22 @@ using System.Collections.Generic;
 public class TreeTarget : BaseTarget
 {
     protected ResourceCollection<WoodResource> WoodResources { get; set; }
-    public int woodAmount;
-    
+    public override int ResourceCount => WoodResources.Count;
+
     private void Awake()
     {
-        ResetCollection();
+        ResetCollection(0);
     }
 
     public override void Reset()
     {
         base.Reset();
-        ResetCollection();
+        ResetCollection(0);
+    }
+
+    public override Type GetResourceType()
+    {
+        return typeof(WoodResource);
     }
 
     public override BaseResource GetResource()
@@ -27,13 +32,12 @@ public class TreeTarget : BaseTarget
     {
         if (resourceData.ContainsKey(typeof(WoodResource)))
         {
-            woodAmount = resourceData[typeof(WoodResource)];
-            ResetCollection();
+            ResetCollection(resourceData[typeof(WoodResource)]);
         }
     }
 
-    private void ResetCollection()
+    private void ResetCollection(int amount)
     {
-        WoodResources = new ResourceCollection<WoodResource>(woodAmount);
+        WoodResources = new ResourceCollection<WoodResource>(amount);
     }
 }

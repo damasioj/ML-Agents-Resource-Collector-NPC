@@ -9,7 +9,7 @@ public class CollectorAcademy : MonoBehaviour
     private Academy collectorAcademy;
     private Dictionary<string, float> boundaryLimits;
     private BaseGoal goal;
-    private List<CollectorAgent> agents;
+    private CollectorAgent agent;
     private List<BaseTarget> targets;
 
     private void Awake()
@@ -21,32 +21,58 @@ public class CollectorAcademy : MonoBehaviour
     void Start()
     {
         boundaryLimits = GetBoundaryLimits();
-        agents = gameObject.GetComponentsInChildren<CollectorAgent>().ToList();
+        agent = gameObject.GetComponentsInChildren<CollectorAgent>().ToList().First();
         targets = gameObject.GetComponentsInChildren<BaseTarget>().ToList();
         goal = gameObject.GetComponentInChildren<BaseGoal>();
 
-        agents.ForEach(a => a.BoundaryLimits = boundaryLimits);
+        agent.BoundaryLimits = boundaryLimits;
         targets.ForEach(t => t.BoundaryLimits = boundaryLimits);
         goal.goalLimits = GetGoalLimits();
     }
 
     private void FixedUpdate()
     {
-        if (collectorAcademy.StepCount % 3 == 0)
+        //if (collectorAcademy.StepCount % 1 == 0)
+        //{
+        //    agents.ForEach(a => a.RequestDecision());
+        //}
+
+        agent.RequestDecision();
+
+        if (agent.IsDoneJob)
         {
-            agents.ForEach(a => a.RequestDecision());
+            SetAgentTarget();
         }
     }
 
     private void EnvironmentReset()
     {
-        if (goal.IsComplete)
-        {
-            targets.ToList().ForEach(t => t.Reset());
-        }
-
+        targets.Where(t => t.TargetHit).ToList().ForEach(t => t.Reset());
         goal.Reset();
         SetResourceRequirements();
+        SetAgentTarget();
+    }
+
+    /// <summary>
+    /// Sets a random valid target for the agent.
+    /// </summary>
+    private void SetAgentTarget()
+    {
+        var validTargets = GetValidTargets().ToList();
+
+        if (validTargets.Count > 0)
+        {
+            agent.Target = validTargets[UnityEngine.Random.Range(0, validTargets.Count)];
+        }
+    }
+
+    /// <summary>
+    /// Returns the targets that still contain resources.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerable<BaseTarget> GetValidTargets()
+    {
+        return targets.Where(t => t.ResourceCount > 0);
     }
 
     private Dictionary<string, float> GetBoundaryLimits()

@@ -5,17 +5,22 @@ using System.Collections.Generic;
 public class StoneTarget : BaseTarget
 {
     protected ResourceCollection<StoneResource> StoneResources { get; set; }
-    public int stoneAmount;
+    public override int ResourceCount => StoneResources.Count;
 
     private void Awake()
     {
-        ResetCollection();
+        ResetCollection(0);
     }
 
     public override void Reset()
     {
         base.Reset();
-        ResetCollection();
+        ResetCollection(0);
+    }
+
+    public override Type GetResourceType()
+    {
+        return typeof(StoneResource);
     }
 
     public override BaseResource GetResource()
@@ -27,13 +32,12 @@ public class StoneTarget : BaseTarget
     {
         if (resourceData.ContainsKey(typeof(StoneResource)))
         {
-            stoneAmount = resourceData[typeof(StoneResource)];
-            ResetCollection();
+            ResetCollection(resourceData[typeof(StoneResource)]);
         }
     }
 
-    private void ResetCollection()
+    private void ResetCollection(int amount)
     {
-        StoneResources = new ResourceCollection<StoneResource>(stoneAmount);
+        StoneResources = new ResourceCollection<StoneResource>(amount);
     }
 }

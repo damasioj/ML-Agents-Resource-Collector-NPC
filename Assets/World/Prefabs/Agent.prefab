@@ -460,6 +460,7 @@ GameObject:
   - component: {fileID: -1014888073294251699}
   - component: {fileID: -4745949649088816016}
   - component: {fileID: 169599869286897147}
+  - component: {fileID: 5077775645177421403}
   m_Layer: 0
   m_Name: Agent
   m_TagString: Untagged
@@ -498,8 +499,8 @@ Rigidbody:
   m_GameObject: {fileID: 6502164747158278507}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 9
-  m_AngularDrag: 0.05
+  m_Drag: 20
+  m_AngularDrag: 0
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -518,7 +519,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 16
+    vectorObservationSize: 10
     numStackedVectorObservations: 1
     vectorActionSize: 02000000
     vectorActionDescriptions: []
@@ -544,10 +545,24 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  maxStep: 750
-  speed: 15
-  targets: []
+  maxStep: 1000
+  speed: 30
   goal: {fileID: 0}
+--- !u!114 &5077775645177421403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6502164747158278507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2902496c0120472b90269f94a0aec7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  record: 1
+  demonstrationName: ResourceCollector
+  demonstrationDirectory: Assets/Demonstrations
 --- !u!1 &6538756311797284798
 GameObject:
   m_ObjectHideFlags: 0

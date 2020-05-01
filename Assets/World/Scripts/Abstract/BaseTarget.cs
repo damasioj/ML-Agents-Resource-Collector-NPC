@@ -6,6 +6,7 @@ public abstract class BaseTarget : MonoBehaviour
 {
     public bool TargetHit { get; protected set; }
     public Dictionary<string, float> BoundaryLimits { get; set; }
+    public abstract int ResourceCount { get; }
 
     private void Awake()
     {
@@ -42,6 +43,7 @@ public abstract class BaseTarget : MonoBehaviour
         }
     }
 
+    public abstract Type GetResourceType();
     public abstract BaseResource GetResource();
     public abstract void SetResourceAmount(Dictionary<Type, int> resourceData);
 }

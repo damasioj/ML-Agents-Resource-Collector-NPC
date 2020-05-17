@@ -74,7 +74,6 @@ public class CollectorAgent : Agent
             case "boundary":
                 if (!IsDone)
                 {
-                    SubtractReward(0.1f);
                     Debug.Log($"Current Reward: {GetCumulativeReward()}");
                     Done();
                 }
@@ -167,7 +166,7 @@ public class CollectorAgent : Agent
     {
         if(goal.IsComplete)
         {
-            AddReward(5.0f);            
+            AddReward(2.0f);            
             Debug.Log($"Current Reward: {GetCumulativeReward()}");
             Done();
         }

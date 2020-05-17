@@ -545,7 +545,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  maxStep: 1000
+  maxStep: 750
   speed: 30
   goal: {fileID: 0}
 --- !u!114 &5077775645177421403

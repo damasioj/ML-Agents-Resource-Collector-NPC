@@ -6,11 +6,13 @@ using UnityEngine;
 
 public class CollectorAcademy : MonoBehaviour
 {
+    private bool isFirstRun;
     private Academy collectorAcademy;
     private Dictionary<string, float> boundaryLimits;
     private BaseGoal goal;
     private CollectorAgent agent;
     private List<BaseTarget> targets;
+    private Queue<float> runningRewardTotals;
 
     private void Awake()
     {
@@ -20,23 +22,20 @@ public class CollectorAcademy : MonoBehaviour
 
     void Start()
     {
+        isFirstRun = true;
         boundaryLimits = GetBoundaryLimits();
-        agent = gameObject.GetComponentsInChildren<CollectorAgent>().ToList().First();
+        agent = gameObject.GetComponentInChildren<CollectorAgent>();
         targets = gameObject.GetComponentsInChildren<BaseTarget>().ToList();
         goal = gameObject.GetComponentInChildren<BaseGoal>();
 
         agent.BoundaryLimits = boundaryLimits;
         targets.ForEach(t => t.BoundaryLimits = boundaryLimits);
         goal.goalLimits = GetGoalLimits();
+        runningRewardTotals = new Queue<float>(3);
     }
 
     private void FixedUpdate()
     {
-        //if (collectorAcademy.StepCount % 1 == 0)
-        //{
-        //    agents.ForEach(a => a.RequestDecision());
-        //}
-
         agent.RequestDecision();
 
         if (agent.IsDoneJob)
@@ -47,10 +46,14 @@ public class CollectorAcademy : MonoBehaviour
 
     private void EnvironmentReset()
     {
-        targets.Where(t => t.TargetHit).ToList().ForEach(t => t.Reset());
-        goal.Reset();
-        SetResourceRequirements();
-        SetAgentTarget();
+        if (agent.IsDone || isFirstRun)
+        {
+            targets.Where(t => t.TargetHit).ToList().ForEach(t => t.Reset());
+            goal.Reset();
+            SetResourceRequirements();
+            SetAgentTarget();
+            isFirstRun = false;
+        }
     }
 
     /// <summary>
@@ -85,29 +88,29 @@ public class CollectorAcademy : MonoBehaviour
             ["Z"] = 0
         };
 
-        var boundaries = GameObject.FindGameObjectsWithTag("boundary");
+        var boundaries = gameObject.GetComponentsInChildren(typeof(BoxCollider)).Where(x => x.CompareTag("boundary")).ToList();
         foreach (var boundary in boundaries)
         {
-            float x = boundary.gameObject.transform.position.x;
-            float z = boundary.gameObject.transform.position.z;
-            float lengthAdjust = (float)Math.Sqrt(Math.Pow(boundary.gameObject.transform.position.y * 2, 2));
+            float x = boundary.gameObject.transform.localPosition.x;
+            float z = boundary.gameObject.transform.localPosition.z;
+            float lengthAdjust = boundary.gameObject.transform.localScale.y * 2;
 
             // set X boundary
-            if (x > limits["X"])
+            if (x > limits["X"] || limits["X"] == 0)
             {
                 limits["X"] = x - lengthAdjust;
             }
-            else if (x < limits["-X"])
+            if (x < limits["-X"] || limits["-X"] == 0)
             {
                 limits["-X"] = x + lengthAdjust;
             }
 
             // set Z boundary
-            if (z > limits["Z"])
+            if (z > limits["Z"] || limits["Z"] == 0)
             {
                 limits["Z"] = z - lengthAdjust;
             }
-            else if (z < limits["-Z"])
+            if (z < limits["-Z"] || limits["-Z"] == 0)
             {
                 limits["-Z"] = z + lengthAdjust;
             }
@@ -131,8 +134,10 @@ public class CollectorAcademy : MonoBehaviour
     // temporary setup used for training
     private void SetResourceRequirements()
     {
-        int woodAmount = UnityEngine.Random.Range(1, 3);
-        int stoneAmount = UnityEngine.Random.Range(1, 3);
+        int maxAmount = 2;//GetMaxResourceAmount();
+
+        int woodAmount = UnityEngine.Random.Range(1, maxAmount);
+        int stoneAmount = UnityEngine.Random.Range(1, maxAmount);
 
         var requirements = new Dictionary<Type, int>
         {
@@ -142,5 +147,28 @@ public class CollectorAcademy : MonoBehaviour
 
         goal.SetResourceRequirements(requirements);
         targets.ForEach(t => t.SetResourceAmount(requirements));
+    }
+
+    // TODO : for curriculum learning
+    private int GetMaxResourceAmount()
+    {
+        if (runningRewardTotals.Count < 3)
+        {
+            return 2;
+        }
+
+        float average = runningRewardTotals.Sum() / 3;
+        if (average > 3)
+        {
+            return 4;
+        }
+        else if (average > 2)
+        {
+            return 3;
+        }
+        else
+        {
+            return 2;
+        }
     }
 }

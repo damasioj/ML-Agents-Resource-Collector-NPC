@@ -410,11 +410,6 @@ PrefabInstance:
       propertyPath: goal
       value: 
       objectReference: {fileID: 1365603740}
-    - target: {fileID: 3301140445356842710, guid: d8406f6bc06236743abb5cd1e4f898a7,
-        type: 3}
-      propertyPath: MaxStep
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6073645273476294041, guid: d8406f6bc06236743abb5cd1e4f898a7,
         type: 3}
       propertyPath: woodAmount
@@ -454,17 +449,6 @@ PrefabInstance:
         type: 3}
       propertyPath: DemonstrationName
       value: ResourceCollector_AI
-      objectReference: {fileID: 0}
-    - target: {fileID: 1272394852038661981, guid: d8406f6bc06236743abb5cd1e4f898a7,
-        type: 3}
-      propertyPath: m_Model
-      value: 
-      objectReference: {fileID: 5022602860645237092, guid: 292b6763ca16d5e46b6a2b822356c57a,
-        type: 3}
-    - target: {fileID: 1272394852038661981, guid: d8406f6bc06236743abb5cd1e4f898a7,
-        type: 3}
-      propertyPath: m_BehaviorType
-      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d8406f6bc06236743abb5cd1e4f898a7, type: 3}

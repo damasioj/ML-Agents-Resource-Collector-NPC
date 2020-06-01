@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -8,6 +9,8 @@ using UnityEngine;
 
 public class CollectorAgent : Agent
 {
+    private Dictionary<States, AgentState> stateDictionary;
+    
     private CollectorAcademy collectorAcademy;
     private Rigidbody rBody;
     private BaseResource resource;
@@ -40,6 +43,24 @@ public class CollectorAgent : Agent
             Debug.Log($"Current target: {target.gameObject.name}, Number required: {target.ResourceCount}");
         }
     }
+
+    private States currentState;
+    public States CurrentState
+    {
+        get
+        {
+            return currentState;
+        }
+        set
+        {
+            if (value != currentState)
+            {
+                stateDictionary[currentState].OnExit(this);
+                currentState = value;
+                stateDictionary[currentState].OnEnter(this);
+            }
+        }
+    }
     #endregion
 
     void Start()
@@ -49,15 +70,36 @@ public class CollectorAgent : Agent
         collectorAcademy = GetComponentInParent<CollectorAcademy>();
         rBody = GetComponent<Rigidbody>();
         routine = Coroutines.Instance;
+        
+        // assign states to dictionary and set
+        AssignStateDictionary();
+        CurrentState = States.Idle;
     }
 
-    private void FixedUpdate()
+    void Update()
+    {
+        stateDictionary[CurrentState].OnUpdate(this);
+    }
+
+    void FixedUpdate()
     {
         if (isDoneCalled)
         {
             isDoneCalled = false;
             EndEpisode();
         }
+
+        stateDictionary[CurrentState].OnFixedUpdate(this);
+    }
+
+    void AssignStateDictionary()
+    {
+        stateDictionary = new Dictionary<States, AgentState>()
+        {
+            [States.Idle] = new IdleState(),
+            [States.Moving] = new MoveState(),
+            [States.Collecting] = new CollectingState()
+        };
     }
 
     private void OnTriggerEnter(Collider other) // TODO : refactor
@@ -111,6 +153,7 @@ public class CollectorAgent : Agent
             transform.localPosition = new Vector3(0, 1, 0);
         }
 
+        currentState = States.Idle;
         collectorAcademy.EnvironmentReset(); // TODO : find a way to refactor this ... agent shouldn't call academy functions
         resource = null;
         isDoneCalled = false;
@@ -139,6 +182,7 @@ public class CollectorAgent : Agent
             sensor.AddObservation(transform.localPosition.z); //1
             sensor.AddObservation(rBody.velocity.x); //1
             sensor.AddObservation(rBody.velocity.z); //1
+            sensor.AddObservation((int)CurrentState); // 1
 
             // for debugging only
             //if (this.StepCount % 300 == 0)
@@ -154,8 +198,11 @@ public class CollectorAgent : Agent
 
     public override void OnActionReceived(float[] vectorAction)
     {
-        Move(vectorAction);
-        DoAction(vectorAction);
+        if (stateDictionary[currentState].IsFinished)
+        {
+            Move(vectorAction);
+            CollectResource(vectorAction);
+        }
     }
 
     private void Move(float[] vectorAction)
@@ -165,33 +212,31 @@ public class CollectorAgent : Agent
         controlSignal.x = vectorAction[0];
         controlSignal.z = vectorAction[1];
 
+        // agent is idle
         if (controlSignal.x == 0 && controlSignal.z == 0)
         {
-            rBody.angularVelocity = Vector3.zero;
-            rBody.velocity = Vector3.zero;
+            CurrentState = States.Idle;
             return;
         }
 
-        if (rBody.velocity.x > speed)
-        {
-            controlSignal.x = 0;
-        }
-        if (rBody.velocity.z > speed)
-        {
-            controlSignal.z = 0;
-        }
-
-        rBody.AddForce(new Vector3(controlSignal.x * 750, 0, controlSignal.z * 750));        
+        // agent is moving
+        CurrentState = States.Moving;
+        stateDictionary[CurrentState].DoAction(this, vectorAction);
     }
 
-    private void DoAction(float[] vectorAction)
+    private void CollectResource(float[] vectorAction)
     {
-
         if (vectorAction[2] == 1f && atResource && !HasResource)
         {
-            // do action
-            //StartCoroutine(routine.BasicWaiter(5f));
-            routine.BasicWaiter(5000f);
+            CurrentState = States.Collecting;
+            stateDictionary[CurrentState].SetAction(TakeResource);
+        }
+    }
+
+    private void TakeResource()
+    {
+        if (atResource && !HasResource)
+        {
             resource = Target.GetResource();
 
             if (resource is object)

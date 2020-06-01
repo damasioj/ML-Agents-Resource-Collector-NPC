@@ -546,7 +546,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 1000
+  MaxStep: 3000
   speed: 30
   goal: {fileID: 0}
 --- !u!114 &5077775645177421403
@@ -561,7 +561,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2902496c0120472b90269f94a0aec7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Record: 1
+  Record: 0
   DemonstrationName: ResourceCollector
   DemonstrationDirectory: Assets/Demonstrations
 --- !u!114 &-3795968474438804709

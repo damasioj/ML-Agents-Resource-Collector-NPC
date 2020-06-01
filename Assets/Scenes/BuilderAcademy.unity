@@ -280,7 +280,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 506325391}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.70710677}
-  m_LocalPosition: {x: -2.4, y: 166.2, z: 44.4}
+  m_LocalPosition: {x: -2.4, y: 54.2, z: -1.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -410,6 +410,11 @@ PrefabInstance:
       propertyPath: goal
       value: 
       objectReference: {fileID: 1365603740}
+    - target: {fileID: 3301140445356842710, guid: d8406f6bc06236743abb5cd1e4f898a7,
+        type: 3}
+      propertyPath: MaxStep
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6073645273476294041, guid: d8406f6bc06236743abb5cd1e4f898a7,
         type: 3}
       propertyPath: woodAmount
@@ -439,6 +444,27 @@ PrefabInstance:
         type: 3}
       propertyPath: record
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7637376661256213878, guid: d8406f6bc06236743abb5cd1e4f898a7,
+        type: 3}
+      propertyPath: Record
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7637376661256213878, guid: d8406f6bc06236743abb5cd1e4f898a7,
+        type: 3}
+      propertyPath: DemonstrationName
+      value: ResourceCollector_AI
+      objectReference: {fileID: 0}
+    - target: {fileID: 1272394852038661981, guid: d8406f6bc06236743abb5cd1e4f898a7,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 5022602860645237092, guid: 292b6763ca16d5e46b6a2b822356c57a,
+        type: 3}
+    - target: {fileID: 1272394852038661981, guid: d8406f6bc06236743abb5cd1e4f898a7,
+        type: 3}
+      propertyPath: m_BehaviorType
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d8406f6bc06236743abb5cd1e4f898a7, type: 3}
@@ -489,6 +515,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Academy (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3425703917169165143, guid: d8406f6bc06236743abb5cd1e4f898a7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9181444950600204467, guid: d8406f6bc06236743abb5cd1e4f898a7,
         type: 3}
@@ -670,6 +701,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Academy (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 3425703917169165143, guid: d8406f6bc06236743abb5cd1e4f898a7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9181444950600204467, guid: d8406f6bc06236743abb5cd1e4f898a7,
         type: 3}
       propertyPath: stoneAmount
@@ -813,6 +849,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Academy (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3425703917169165143, guid: d8406f6bc06236743abb5cd1e4f898a7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9181444950600204467, guid: d8406f6bc06236743abb5cd1e4f898a7,
         type: 3}
@@ -993,6 +1034,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Academy (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3425703917169165143, guid: d8406f6bc06236743abb5cd1e4f898a7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9181444950600204467, guid: d8406f6bc06236743abb5cd1e4f898a7,
         type: 3}
@@ -1240,6 +1286,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Academy (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3425703917169165143, guid: d8406f6bc06236743abb5cd1e4f898a7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9181444950600204467, guid: d8406f6bc06236743abb5cd1e4f898a7,
         type: 3}

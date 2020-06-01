@@ -1,4 +1,4 @@
-﻿using MLAgents;
+﻿using Unity.MLAgents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class CollectorAcademy : MonoBehaviour
 {
-    private bool isFirstRun;
     private Academy collectorAcademy;
     private Dictionary<string, float> boundaryLimits;
     private BaseGoal goal;
@@ -22,7 +21,6 @@ public class CollectorAcademy : MonoBehaviour
 
     void Start()
     {
-        isFirstRun = true;
         boundaryLimits = GetBoundaryLimits();
         agent = gameObject.GetComponentInChildren<CollectorAgent>();
         targets = gameObject.GetComponentsInChildren<BaseTarget>().ToList();
@@ -34,32 +32,18 @@ public class CollectorAcademy : MonoBehaviour
         runningRewardTotals = new Queue<float>(3);
     }
 
-    private void FixedUpdate()
+    public void EnvironmentReset()
     {
-        agent.RequestDecision();
-
-        if (agent.IsDoneJob)
-        {
-            SetAgentTarget();
-        }
-    }
-
-    private void EnvironmentReset()
-    {
-        if (agent.IsDone || isFirstRun)
-        {
-            targets.Where(t => t.TargetHit).ToList().ForEach(t => t.Reset());
-            goal.Reset();
-            SetResourceRequirements();
-            SetAgentTarget();
-            isFirstRun = false;
-        }
+        targets.Where(t => t.TargetHit).ToList().ForEach(t => t.Reset());
+        goal.Reset();
+        SetResourceRequirements();
+        SetAgentTarget();
     }
 
     /// <summary>
     /// Sets a random valid target for the agent.
     /// </summary>
-    private void SetAgentTarget()
+    public void SetAgentTarget()
     {
         var validTargets = GetValidTargets().ToList();
 
@@ -134,7 +118,7 @@ public class CollectorAcademy : MonoBehaviour
     // temporary setup used for training
     private void SetResourceRequirements()
     {
-        int maxAmount = 2;//GetMaxResourceAmount();
+        int maxAmount = 5;//GetMaxResourceAmount();
 
         int woodAmount = UnityEngine.Random.Range(1, maxAmount);
         int stoneAmount = UnityEngine.Random.Range(1, maxAmount);

@@ -1,15 +1,20 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using MLAgents;
-using MLAgents.Sensors;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 using UnityEngine;
 
 public class CollectorAgent : Agent
 {
-    private Vector3 maxVelocity;
+    private CollectorAcademy collectorAcademy;
     private Rigidbody rBody;
     private BaseResource resource;
+    private Coroutines routine;
+    private bool isDoneCalled;
+    private bool atResource;
+    private object actionLock;
 
     public float speed;
     public BaseGoal goal;
@@ -39,8 +44,20 @@ public class CollectorAgent : Agent
 
     void Start()
     {
+        actionLock = new object();
+        isDoneCalled = false;
+        collectorAcademy = GetComponentInParent<CollectorAcademy>();
         rBody = GetComponent<Rigidbody>();
-        maxVelocity = new Vector3(speed, 0f, speed);
+        routine = Coroutines.Instance;
+    }
+
+    private void FixedUpdate()
+    {
+        if (isDoneCalled)
+        {
+            isDoneCalled = false;
+            EndEpisode();
+        }
     }
 
     private void OnTriggerEnter(Collider other) // TODO : refactor
@@ -61,73 +78,84 @@ public class CollectorAgent : Agent
             case "target":
                 if (!HasResource)
                 {
-                    var target = other.gameObject.GetComponent(typeof(BaseTarget)) as BaseTarget;
-                    resource = target.GetResource();
-
-                    //if (resource is object)
-                    //{
-                    //    AddReward(0.3f);
-                    //    Debug.Log($"Current Reward: {GetCumulativeReward()}");
-                    //}
+                    atResource = true;
                 }
                 break;
             case "boundary":
-                if (!IsDone)
+                if (!isDoneCalled)
                 {
+                    isDoneCalled = true;
+                    SubtractReward(0.1f);
                     Debug.Log($"Current Reward: {GetCumulativeReward()}");
-                    Done();
                 }
                 break;
         }
     }
 
-    public override void AgentReset()
+    private void OnTriggerExit(Collider other)
     {
-        Debug.Log($"Reward: {GetCumulativeReward()}");
+        if (other.CompareTag("target"))
+        {
+            atResource = false;
+        }
+    }
 
-        rBody.angularVelocity = Vector3.zero;
-        rBody.velocity = Vector3.zero;
-        transform.localPosition = new Vector3(0, 1, 0);
+    public override void OnEpisodeBegin()
+    {
+        SetReward(0f);
+        
+        if (!goal.IsComplete)
+        {
+            rBody.angularVelocity = Vector3.zero;
+            rBody.velocity = Vector3.zero;
+            transform.localPosition = new Vector3(0, 1, 0);
+        }
 
+        collectorAcademy.EnvironmentReset(); // TODO : find a way to refactor this ... agent shouldn't call academy functions
         resource = null;
+        isDoneCalled = false;
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        // boundaries
-        //BoundaryLimits.Values.ToList().ForEach(b => sensor.AddObservation(b)); //4
+        if (sensor is object && StepCount > 0) // guarantee we dont send NaN values
+        {
+            // boundaries
+            //BoundaryLimits.Values.ToList().ForEach(b => sensor.AddObservation(b)); //4
 
-        // target location
-        sensor.AddObservation(target.transform.position.x); //1
-        sensor.AddObservation(target.transform.position.z); //1
+            // target location
+            sensor.AddObservation(target.transform.localPosition.x); //1
+            sensor.AddObservation(target.transform.localPosition.z); //1
 
-        // goal info
-        sensor.AddObservation(goal.transform.position.x); //1
-        sensor.AddObservation(goal.transform.position.z); //1
-        sensor.AddObservation(goal.GetResourcesRequired().First(g => g.Key == target.GetResourceType()).Value); //1 -- # required of current resource
+            // goal info
+            sensor.AddObservation(goal.transform.localPosition.x); //1
+            sensor.AddObservation(goal.transform.localPosition.z); //1
+            sensor.AddObservation(goal.GetResourcesRequired().First(g => g.Key == target.GetResourceType()).Value); //1 -- # required of current resource
 
-        // Agent data
-        sensor.AddObservation(IsDoneJob);
-        sensor.AddObservation(HasResource); //1
-        sensor.AddObservation(transform.position.x); //1
-        sensor.AddObservation(transform.position.z); //1
-        sensor.AddObservation(rBody.velocity.x); //1
-        sensor.AddObservation(rBody.velocity.z); //1
+            // Agent data
+            sensor.AddObservation(IsDoneJob); // 1
+            sensor.AddObservation(HasResource); //1
+            sensor.AddObservation(transform.localPosition.x); //1
+            sensor.AddObservation(transform.localPosition.z); //1
+            sensor.AddObservation(rBody.velocity.x); //1
+            sensor.AddObservation(rBody.velocity.z); //1
 
-        // for debugging only
-        //if (this.StepCount % 300 == 0)
-        //{
-        //    Debug.Log($"TARGET || Name: {target.name} X: {target.transform.position.x}, Z: {target.transform.position.z}");
-        //    Debug.Log($"GOAL || X: {goal.transform.position.x}, Z: {goal.transform.position.z}");
-        //    Debug.Log($"GOAL || Resources Required: {goal.GetResourcesRequired().First(g => g.Key == target.GetResourceType()).Value}");
-        //    Debug.Log($"AGENT || IsDoneJob: {IsDoneJob}, HasResource: {HasResource}");
-        //    Debug.Log($"AGENT || X: {transform.position.x}, Z: {transform.position.z}, Velocity X: {rBody.velocity.x}, Velocity Z: {rBody.velocity.z}");
-        //}
+            // for debugging only
+            //if (this.StepCount % 300 == 0)
+            //{
+            //    Debug.Log($"TARGET || Name: {target.name} X: {target.transform.position.x}, Z: {target.transform.position.z}");
+            //    Debug.Log($"GOAL || X: {goal.transform.position.x}, Z: {goal.transform.position.z}");
+            //    Debug.Log($"GOAL || Resources Required: {goal.GetResourcesRequired().First(g => g.Key == target.GetResourceType()).Value}");
+            //    Debug.Log($"AGENT || IsDoneJob: {IsDoneJob}, HasResource: {HasResource}");
+            //    Debug.Log($"AGENT || X: {transform.position.x}, Z: {transform.position.z}, Velocity X: {rBody.velocity.x}, Velocity Z: {rBody.velocity.z}");
+            //}
+        }
     }
 
-    public override void AgentAction(float[] vectorAction)
+    public override void OnActionReceived(float[] vectorAction)
     {
         Move(vectorAction);
+        DoAction(vectorAction);
     }
 
     private void Move(float[] vectorAction)
@@ -137,15 +165,40 @@ public class CollectorAgent : Agent
         controlSignal.x = vectorAction[0];
         controlSignal.z = vectorAction[1];
 
-        if (rBody.velocity.magnitude < maxVelocity.magnitude)
-        {
-            rBody.velocity += controlSignal * speed;
-        }
-
-        if (controlSignal.x + controlSignal.z == 0)
+        if (controlSignal.x == 0 && controlSignal.z == 0)
         {
             rBody.angularVelocity = Vector3.zero;
             rBody.velocity = Vector3.zero;
+            return;
+        }
+
+        if (rBody.velocity.x > speed)
+        {
+            controlSignal.x = 0;
+        }
+        if (rBody.velocity.z > speed)
+        {
+            controlSignal.z = 0;
+        }
+
+        rBody.AddForce(new Vector3(controlSignal.x * 750, 0, controlSignal.z * 750));        
+    }
+
+    private void DoAction(float[] vectorAction)
+    {
+
+        if (vectorAction[2] == 1f && atResource && !HasResource)
+        {
+            // do action
+            //StartCoroutine(routine.BasicWaiter(5f));
+            routine.BasicWaiter(5000f);
+            resource = Target.GetResource();
+
+            if (resource is object)
+            {
+                AddReward(0.1f);
+                Debug.Log($"Current Reward: {GetCumulativeReward()}");
+            }
         }
     }
 
@@ -159,6 +212,7 @@ public class CollectorAgent : Agent
         if (!isResourceRequired)
         {
             IsDoneJob = true;
+            collectorAcademy.SetAgentTarget();
         }
     }
 
@@ -166,18 +220,17 @@ public class CollectorAgent : Agent
     {
         if(goal.IsComplete)
         {
-            AddReward(2.0f);            
+            AddReward(2.0f);
             Debug.Log($"Current Reward: {GetCumulativeReward()}");
-            Done();
+            EndEpisode();
         }
     }
 
-    public override float[] Heuristic()
+    public override void Heuristic(float[] actions)
     {
-        var action = new float[2];
-        action[0] = Input.GetAxis("Horizontal");
-        action[1] = Input.GetAxis("Vertical");
-        return action;
+        actions[0] = Input.GetAxis("Horizontal");
+        actions[1] = Input.GetAxis("Vertical");
+        actions[2] = Convert.ToSingle(Input.GetKey(KeyCode.E));
     }
 
     private void SubtractReward(float value)

@@ -328,7 +328,7 @@ namespace MLAgents
             m_RequestDecision = false;
 
             // Call the academy environment reset
-            Academy.Instance.EnvironmentReset();
+            //Academy.Instance.EnvironmentReset();
         }
 
         /// <summary>

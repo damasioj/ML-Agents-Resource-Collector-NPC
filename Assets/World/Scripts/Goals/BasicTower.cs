@@ -14,7 +14,7 @@ public class BasicTower : BaseGoal
     {
         woodResources = new ResourceCollection<WoodResource>();
         stoneResources = new ResourceCollection<StoneResource>();
-        base.Reset();
+        //base.Reset();
     }
 
     public override bool IsComplete

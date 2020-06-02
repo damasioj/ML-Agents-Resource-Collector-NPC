@@ -9,15 +9,13 @@ using UnityEngine;
 
 public class CollectorAgent : Agent
 {
-    private Dictionary<States, AgentState> stateDictionary;
-    
+    private Dictionary<States, AgentState> stateDictionary;    
     private CollectorAcademy collectorAcademy;
     private Rigidbody rBody;
     private BaseResource resource;
-    private Coroutines routine;
     private bool isDoneCalled;
     private bool atResource;
-    private object actionLock;
+    private int stepLimiter; // used in place of maxsteps
 
     public float speed;
     public BaseGoal goal;
@@ -65,11 +63,10 @@ public class CollectorAgent : Agent
 
     void Start()
     {
-        actionLock = new object();
+        stepLimiter = 0;
         isDoneCalled = false;
         collectorAcademy = GetComponentInParent<CollectorAcademy>();
         rBody = GetComponent<Rigidbody>();
-        routine = Coroutines.Instance;
         
         // assign states to dictionary and set
         AssignStateDictionary();
@@ -90,6 +87,13 @@ public class CollectorAgent : Agent
         }
 
         stateDictionary[CurrentState].OnFixedUpdate(this);
+
+        stepLimiter++;
+        if (stepLimiter > 1500)
+        {
+            SubtractReward(0.1f);
+            EndEpisode();
+        }
     }
 
     void AssignStateDictionary()
@@ -114,6 +118,7 @@ public class CollectorAgent : Agent
                     deposit.AddResource(ref resource);
                     ValidateJobComplete();
                     ValidateGoalComplete();
+                    stepLimiter = 0;
                     Debug.Log($"Current Reward: {GetCumulativeReward()}");
                 }
                 break;
@@ -145,6 +150,7 @@ public class CollectorAgent : Agent
     public override void OnEpisodeBegin()
     {
         SetReward(0f);
+        stepLimiter = 0;
         
         if (!goal.IsComplete)
         {
@@ -161,39 +167,34 @@ public class CollectorAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        if (sensor is object && StepCount > 0) // guarantee we dont send NaN values
-        {
-            // boundaries
-            //BoundaryLimits.Values.ToList().ForEach(b => sensor.AddObservation(b)); //4
+        // boundaries
+        //BoundaryLimits.Values.ToList().ForEach(b => sensor.AddObservation(b)); //4
 
-            // target location
-            sensor.AddObservation(target.transform.localPosition.x); //1
-            sensor.AddObservation(target.transform.localPosition.z); //1
+        // target location
+        sensor.AddObservation(target.transform.localPosition.x); //1
+        sensor.AddObservation(target.transform.localPosition.z); //1
 
-            // goal info
-            sensor.AddObservation(goal.transform.localPosition.x); //1
-            sensor.AddObservation(goal.transform.localPosition.z); //1
-            sensor.AddObservation(goal.GetResourcesRequired().First(g => g.Key == target.GetResourceType()).Value); //1 -- # required of current resource
+        // goal info
+        sensor.AddObservation(goal.transform.localPosition.x); //1
+        sensor.AddObservation(goal.transform.localPosition.z); //1
 
-            // Agent data
-            sensor.AddObservation(IsDoneJob); // 1
-            sensor.AddObservation(HasResource); //1
-            sensor.AddObservation(transform.localPosition.x); //1
-            sensor.AddObservation(transform.localPosition.z); //1
-            sensor.AddObservation(rBody.velocity.x); //1
-            sensor.AddObservation(rBody.velocity.z); //1
-            sensor.AddObservation((int)CurrentState); // 1
+        // Agent data
+        sensor.AddObservation(HasResource); //1
+        sensor.AddObservation(transform.localPosition.x); //1
+        sensor.AddObservation(transform.localPosition.z); //1
+        sensor.AddObservation(rBody.velocity.x); //1
+        sensor.AddObservation(rBody.velocity.z); //1
+        sensor.AddObservation((int)CurrentState); // 1
 
-            // for debugging only
-            //if (this.StepCount % 300 == 0)
-            //{
-            //    Debug.Log($"TARGET || Name: {target.name} X: {target.transform.position.x}, Z: {target.transform.position.z}");
-            //    Debug.Log($"GOAL || X: {goal.transform.position.x}, Z: {goal.transform.position.z}");
-            //    Debug.Log($"GOAL || Resources Required: {goal.GetResourcesRequired().First(g => g.Key == target.GetResourceType()).Value}");
-            //    Debug.Log($"AGENT || IsDoneJob: {IsDoneJob}, HasResource: {HasResource}");
-            //    Debug.Log($"AGENT || X: {transform.position.x}, Z: {transform.position.z}, Velocity X: {rBody.velocity.x}, Velocity Z: {rBody.velocity.z}");
-            //}
-        }
+        // for debugging only
+        //if (this.StepCount % 300 == 0)
+        //{
+        //    Debug.Log($"TARGET || Name: {target.name} X: {target.transform.position.x}, Z: {target.transform.position.z}");
+        //    Debug.Log($"GOAL || X: {goal.transform.position.x}, Z: {goal.transform.position.z}");
+        //    Debug.Log($"GOAL || Resources Required: {goal.GetResourcesRequired().First(g => g.Key == target.GetResourceType()).Value}");
+        //    Debug.Log($"AGENT || IsDoneJob: {IsDoneJob}, HasResource: {HasResource}");
+        //    Debug.Log($"AGENT || X: {transform.position.x}, Z: {transform.position.z}, Velocity X: {rBody.velocity.x}, Velocity Z: {rBody.velocity.z}");
+        //}
     }
 
     public override void OnActionReceived(float[] vectorAction)
@@ -228,6 +229,7 @@ public class CollectorAgent : Agent
     {
         if (vectorAction[2] == 1f && atResource && !HasResource)
         {
+            stepLimiter = 0;
             CurrentState = States.Collecting;
             stateDictionary[CurrentState].SetAction(TakeResource);
         }

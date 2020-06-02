@@ -5,7 +5,6 @@ using UnityEngine;
 public class CollectingState : AgentState
 {
     private Action actionToExecute;
-    private float timeToWait = 1f; // TODO : refactor
     private float counter = 0f;
     
     public override bool IsFinished { get; protected set; }
@@ -28,7 +27,7 @@ public class CollectingState : AgentState
     public override void OnEnter(Agent owner)
     {
         IsFinished = false;
-        counter = 0f;
+        counter = owner.StepCount;
         // todo : start animation
     }
 
@@ -44,9 +43,7 @@ public class CollectingState : AgentState
 
     public override void OnUpdate(Agent owner)
     {
-        counter += Time.deltaTime;
-
-        if (counter >= timeToWait)
+        if (owner.StepCount - counter >= 50)
         {
             actionToExecute();
             IsFinished = true;

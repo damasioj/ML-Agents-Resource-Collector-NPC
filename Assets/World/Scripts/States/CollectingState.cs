@@ -38,11 +38,6 @@ public class CollectingState : AgentState
 
     public override void OnFixedUpdate(Agent owner)
     {
-        return;
-    }
-
-    public override void OnUpdate(Agent owner)
-    {
         if (owner.StepCount - counter >= 50)
         {
             actionToExecute();
@@ -54,6 +49,11 @@ public class CollectingState : AgentState
             {
                 collector.CurrentState = States.Idle;
             }
-        }
+        };
+    }
+
+    public override void OnUpdate(Agent owner)
+    {
+        return;
     }
 }

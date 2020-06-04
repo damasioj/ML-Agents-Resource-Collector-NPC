@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MoveState : AgentState
 {
+    private Vector3 _lastPosition = Vector3.zero;
     public override bool IsFinished { get; protected set; }
 
     public override void DoAction(Agent owner)
@@ -33,6 +34,9 @@ public class MoveState : AgentState
             rBody.AddForce(new Vector3(controlSignal.x * 750, 0, controlSignal.z * 750));
         }
 
+        SetDirection(owner);
+        _lastPosition = owner.transform.position;
+
         IsFinished = true;
     }
 
@@ -59,5 +63,12 @@ public class MoveState : AgentState
     public override void SetAction(Action action)
     {
         throw new NotImplementedException();
+    }
+
+    private void SetDirection(Agent owner)
+    {
+        var direction = (owner.transform.position - _lastPosition).normalized;
+
+        owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, Quaternion.LookRotation(-direction), 0.15F);
     }
 }

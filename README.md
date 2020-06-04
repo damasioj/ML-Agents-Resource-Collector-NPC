@@ -13,15 +13,14 @@ The project uses Unity ML-Agents to train agents.
 The following are the goals of this project:
 
 - [x] 1 Agent: collecting a resource and bringing it to the goal
-- [ ] 1 Agent: collecting multiple different resources ...
-- [ ] 2 Agents: collecting multiple different resources ...
-- [ ] 2 Agents: collecting multiple different resources in a specific order ...
+- [x] 1 Agent: collecting multiple different resources and bringing it to the goal
+- [ ] 2 Agents: collecting multiple different resources and bringing it to the goal
 
 # Requirements
 
 To run this environment, you will need:
 - Python 3.6.1 or greater
-	- mlagents 0.14.1/0.15.0-dev0 package development version
+	- mlagents version 1.0.2 
 - Unity 2019.2.0f1 or greater
 
 # Current limitations / issues

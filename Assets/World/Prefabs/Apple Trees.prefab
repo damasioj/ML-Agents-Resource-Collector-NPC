@@ -378,8 +378,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1731156750194299138}
-  - component: {fileID: 550991591062214249}
-  - component: {fileID: 8696671065402105884}
+  - component: {fileID: 2820093995849962706}
+  - component: {fileID: -6990448197088182023}
   m_Layer: 0
   m_Name: Apple Trees
   m_TagString: target
@@ -414,8 +414,8 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &550991591062214249
-BoxCollider:
+--- !u!136 &2820093995849962706
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -424,10 +424,11 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 7.8804307, y: 10.633648, z: 8.199254}
-  m_Center: {x: 0.9359634, y: 3.8523102, z: 0.8046546}
---- !u!114 &8696671065402105884
+  m_Radius: 3.5843549
+  m_Height: 12.295008
+  m_Direction: 1
+  m_Center: {x: 1.6684084, y: 1.7522917, z: 0.82595396}
+--- !u!114 &-6990448197088182023
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -436,11 +437,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 4247459220450977542}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20d291ecc07cb7248a51b28f901c6069, type: 3}
+  m_Script: {fileID: 11500000, guid: 4d4d5ed1b34cede4ca0299bcd34e4a04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  woodAmount: 5
-  appleAmount: 20
 --- !u!1 &4831345149822219680
 GameObject:
   m_ObjectHideFlags: 0

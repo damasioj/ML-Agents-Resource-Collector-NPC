@@ -4,17 +4,16 @@ using UnityEngine;
 
 public class BasicTower : BaseGoal
 {
-    private ResourceCollection<WoodResource> woodResources;
+    private ResourceCollection<WoodResource> woodResources; // refactor : this could be scriptable object
     private ResourceCollection<StoneResource> stoneResources;
 
-    [SerializeField] private int woodRequired;
-    [SerializeField] private int stoneRequired;
+    private int woodRequired;
+    private int stoneRequired;
 
     public override void Reset()
     {
         woodResources = new ResourceCollection<WoodResource>();
         stoneResources = new ResourceCollection<StoneResource>();
-        //base.Reset();
     }
 
     public override bool IsComplete

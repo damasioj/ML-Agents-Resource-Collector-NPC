@@ -36,7 +36,7 @@ public class TreeTarget : BaseTarget
         }
     }
 
-    private void ResetCollection(int amount)
+    protected virtual void ResetCollection(int amount)
     {
         WoodResources = new ResourceCollection<WoodResource>(amount);
     }

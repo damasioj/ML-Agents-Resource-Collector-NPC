@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
@@ -15,7 +13,8 @@ public class CollectorAgent : Agent
     private BaseResource resource;
     private bool isDoneCalled;
     private bool atResource;
-    private int stepLimiter; // used in place of maxsteps
+    private int internalStepCount; // used in place of maxsteps
+    [SerializeField] private int maxInternalSteps;
 
     public float speed;
     public BaseGoal goal;
@@ -43,7 +42,7 @@ public class CollectorAgent : Agent
     }
 
     private States currentState;
-    public States CurrentState
+    public States CurrentState // TODO :  refactor this property to agent class
     {
         get
         {
@@ -63,7 +62,7 @@ public class CollectorAgent : Agent
 
     void Start()
     {
-        stepLimiter = 0;
+        internalStepCount = 0;
         isDoneCalled = false;
         collectorAcademy = GetComponentInParent<CollectorAcademy>();
         rBody = GetComponent<Rigidbody>();
@@ -84,19 +83,21 @@ public class CollectorAgent : Agent
         {
             isDoneCalled = false;
             EndEpisode();
+            return;
         }
 
-        stateDictionary[CurrentState].OnFixedUpdate(this);
-
-        stepLimiter++;
-        if (stepLimiter > 1500)
+        internalStepCount++;
+        if (internalStepCount > maxInternalSteps)
         {
-            SubtractReward(0.1f);
+            SubtractReward(0.08f);
             EndEpisode();
+            return;
         }
+
+        stateDictionary[CurrentState].OnFixedUpdate(this);        
     }
 
-    void AssignStateDictionary()
+    void AssignStateDictionary() // TODO :maybe refactor to scriptable object
     {
         stateDictionary = new Dictionary<States, AgentState>()
         {
@@ -106,7 +107,7 @@ public class CollectorAgent : Agent
         };
     }
 
-    private void OnTriggerEnter(Collider other) // TODO : refactor
+    private void OnTriggerEnter(Collider other) 
     {
         switch (other.tag)
         {
@@ -118,12 +119,12 @@ public class CollectorAgent : Agent
                     deposit.AddResource(ref resource);
                     ValidateJobComplete();
                     ValidateGoalComplete();
-                    stepLimiter = 0;
+                    internalStepCount = 0;
                     Debug.Log($"Current Reward: {GetCumulativeReward()}");
                 }
                 break;
             case "target":
-                if (!HasResource)
+                if (!HasResource && other.GetComponent<BaseTarget>().Equals(Target))
                 {
                     atResource = true;
                 }
@@ -150,16 +151,16 @@ public class CollectorAgent : Agent
     public override void OnEpisodeBegin()
     {
         SetReward(0f);
-        stepLimiter = 0;
+        internalStepCount = 0;
         
         if (!goal.IsComplete)
         {
             rBody.angularVelocity = Vector3.zero;
             rBody.velocity = Vector3.zero;
             transform.localPosition = new Vector3(0, 1, 0);
+            currentState = States.Idle;
         }
-
-        currentState = States.Idle;
+        
         collectorAcademy.EnvironmentReset(); // TODO : find a way to refactor this ... agent shouldn't call academy functions
         resource = null;
         isDoneCalled = false;
@@ -185,6 +186,7 @@ public class CollectorAgent : Agent
         sensor.AddObservation(rBody.velocity.x); //1
         sensor.AddObservation(rBody.velocity.z); //1
         sensor.AddObservation((int)CurrentState); // 1
+        sensor.AddObservation(atResource); // 1
 
         // for debugging only
         //if (this.StepCount % 300 == 0)
@@ -199,22 +201,22 @@ public class CollectorAgent : Agent
 
     public override void OnActionReceived(float[] vectorAction)
     {
-        if (stateDictionary[currentState].IsFinished)
+        //refactor
+        if (stateDictionary[CurrentState].IsFinished)
         {
-            Move(vectorAction);
-            CollectResource(vectorAction);
+            CollectResource();
+        }
+        
+        if (stateDictionary[CurrentState].IsFinished)
+        {
+            Move(vectorAction);            
         }
     }
 
     private void Move(float[] vectorAction)
     {
-        // Move Actions, size = 2
-        Vector3 controlSignal = Vector3.zero;
-        controlSignal.x = vectorAction[0];
-        controlSignal.z = vectorAction[1];
-
         // agent is idle
-        if (controlSignal.x == 0 && controlSignal.z == 0)
+        if (vectorAction[0] == 0 && vectorAction[1] == 0)
         {
             CurrentState = States.Idle;
             return;
@@ -225,11 +227,11 @@ public class CollectorAgent : Agent
         stateDictionary[CurrentState].DoAction(this, vectorAction);
     }
 
-    private void CollectResource(float[] vectorAction)
+    private void CollectResource()
     {
-        if (vectorAction[2] == 1f && atResource && !HasResource)
+        if (atResource && !HasResource)
         {
-            stepLimiter = 0;
+            internalStepCount = 0;
             CurrentState = States.Collecting;
             stateDictionary[CurrentState].SetAction(TakeResource);
         }
@@ -243,7 +245,8 @@ public class CollectorAgent : Agent
 
             if (resource is object)
             {
-                AddReward(0.1f);
+                internalStepCount = 0;
+                AddReward(0.1f);                
                 Debug.Log($"Current Reward: {GetCumulativeReward()}");
             }
         }
@@ -277,10 +280,9 @@ public class CollectorAgent : Agent
     {
         actions[0] = Input.GetAxis("Horizontal");
         actions[1] = Input.GetAxis("Vertical");
-        actions[2] = Convert.ToSingle(Input.GetKey(KeyCode.E));
     }
 
-    private void SubtractReward(float value)
+    private void SubtractReward(float value) // TODO : add to agent class
     {
         AddReward(value * -1);
     }

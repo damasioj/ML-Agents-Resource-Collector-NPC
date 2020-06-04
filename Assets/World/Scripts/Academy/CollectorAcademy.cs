@@ -11,7 +11,6 @@ public class CollectorAcademy : MonoBehaviour
     private BaseGoal goal;
     private CollectorAgent agent;
     private List<BaseTarget> targets;
-    private Queue<float> runningRewardTotals;
 
     private void Awake()
     {
@@ -29,7 +28,6 @@ public class CollectorAcademy : MonoBehaviour
         agent.BoundaryLimits = boundaryLimits;
         targets.ForEach(t => t.BoundaryLimits = boundaryLimits);
         goal.goalLimits = GetGoalLimits();
-        runningRewardTotals = new Queue<float>(3);
     }
 
     public void EnvironmentReset()
@@ -118,7 +116,7 @@ public class CollectorAcademy : MonoBehaviour
     // temporary setup used for training
     private void SetResourceRequirements()
     {
-        int maxAmount = 5;//GetMaxResourceAmount();
+        int maxAmount = 4;//GetMaxResourceAmount();
 
         int woodAmount = UnityEngine.Random.Range(1, maxAmount);
         int stoneAmount = UnityEngine.Random.Range(1, maxAmount);
@@ -131,28 +129,5 @@ public class CollectorAcademy : MonoBehaviour
 
         goal.SetResourceRequirements(requirements);
         targets.ForEach(t => t.SetResourceAmount(requirements));
-    }
-
-    // TODO : for curriculum learning
-    private int GetMaxResourceAmount()
-    {
-        if (runningRewardTotals.Count < 3)
-        {
-            return 2;
-        }
-
-        float average = runningRewardTotals.Sum() / 3;
-        if (average > 3)
-        {
-            return 4;
-        }
-        else if (average > 2)
-        {
-            return 3;
-        }
-        else
-        {
-            return 2;
-        }
     }
 }

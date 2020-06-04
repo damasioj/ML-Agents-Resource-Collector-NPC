@@ -1,14 +1,14 @@
 default:
     trainer: ppo
-    batch_size: 1024
+    batch_size: 512
     num_update: 10
     beta: 1e-03
     buffer_size: 10240
-    train_interval: 25
+    train_interval: 20
     epsilon: 0.28
     hidden_units: 16
     lambd: 0.99
-    learning_rate: 0.003
+    learning_rate: 0.005
     learning_rate_schedule: constant
     max_steps: 1e6
     memory_size: 16
@@ -29,9 +29,9 @@ default:
             # gamma: 0.99
             # encoding_size: 128
         gail:
-            strength: 0.08
+            strength: 0.75
             gamma: 0.99
-            demo_path: C:\Users\joshu\Documents\GitHub\ResourceCollector\Assets\Demonstrations\ResourceCollecto_14.demo
+            demo_path: C:\Users\joshu\Documents\GitHub\ResourceCollector\Assets\Demonstrations\ResourceCollector_6-4.demo
             
 # SAC
 # default:

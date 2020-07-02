@@ -8,9 +8,9 @@ default:
     epsilon: 0.28
     hidden_units: 16
     lambd: 0.99
-    learning_rate: 0.005
+    learning_rate: 0.003
     learning_rate_schedule: constant
-    max_steps: 1e6
+    max_steps: 3e6
     memory_size: 16
     normalize: true
     num_epoch: 3
@@ -28,10 +28,10 @@ default:
             # strength: 0.015
             # gamma: 0.99
             # encoding_size: 128
-        gail:
-            strength: 0.75
-            gamma: 0.99
-            demo_path: C:\Users\joshu\Documents\GitHub\ResourceCollector\Assets\Demonstrations\ResourceCollector_6-4.demo
+        # gail:
+            # strength: 0.075
+            # gamma: 0.99
+            # demo_path: C:\Users\joshu\Documents\GitHub\ResourceCollector\Assets\Demonstrations\ResourceCollector_6-4.demo
             
 # SAC
 # default:

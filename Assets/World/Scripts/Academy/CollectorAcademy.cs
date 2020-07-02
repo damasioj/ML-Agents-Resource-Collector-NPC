@@ -27,7 +27,6 @@ public class CollectorAcademy : MonoBehaviour
 
         agent.BoundaryLimits = boundaryLimits;
         targets.ForEach(t => t.BoundaryLimits = boundaryLimits);
-        goal.goalLimits = GetGoalLimits();
     }
 
     public void EnvironmentReset()
@@ -97,18 +96,6 @@ public class CollectorAcademy : MonoBehaviour
                 limits["-Z"] = z + lengthAdjust;
             }
         }
-
-        return limits;
-    }
-    private Dictionary<string, float> GetGoalLimits()
-    {
-        var limits = new Dictionary<string, float>()
-        {
-            ["-X"] = -5f,
-            ["X"] = 10f,
-            ["-Z"] = -5f,
-            ["Z"] = 5f
-        };
 
         return limits;
     }

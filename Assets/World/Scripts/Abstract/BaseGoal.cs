@@ -5,17 +5,21 @@ using UnityEngine;
 // Purpose of this class is still to be fully defined 
 public abstract class BaseGoal : MonoBehaviour
 {
-    public Dictionary<string, float> goalLimits { get; set; }
+    [SerializeField] private float range;
+    [SerializeField] private float maxSize;
 
     public virtual void Reset()
     {
-        gameObject.transform.localPosition =
+        gameObject.transform.position =
             new Vector3
             (
-                UnityEngine.Random.Range(goalLimits["-X"], goalLimits["X"]),
-                -0.3f,
-                UnityEngine.Random.Range(goalLimits["-Z"], goalLimits["Z"])
+                UnityEngine.Random.Range(range * -1, range),
+                transform.position.y,
+                UnityEngine.Random.Range(range * -1, range)
             );
+
+        float size = UnityEngine.Random.Range(1f, maxSize);
+        gameObject.transform.localScale = new Vector3(size, size, size);
     }
 
     public virtual Vector3 Location

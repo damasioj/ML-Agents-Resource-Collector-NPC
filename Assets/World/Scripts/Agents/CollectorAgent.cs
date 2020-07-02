@@ -22,8 +22,6 @@ public class CollectorAgent : Agent
     #region properties
     private bool HasResource => resource is object;
 
-    [HideInInspector] public bool IsDoneJob { get; private set; }    
-
     [HideInInspector] public Dictionary<string, float> BoundaryLimits { get; set; }
     
     private BaseTarget target;
@@ -36,7 +34,6 @@ public class CollectorAgent : Agent
         set
         {
             target = value;
-            IsDoneJob = false;
             Debug.Log($"Current target: {target.gameObject.name}, Number required: {target.ResourceCount}");
         }
     }
@@ -172,17 +169,17 @@ public class CollectorAgent : Agent
         //BoundaryLimits.Values.ToList().ForEach(b => sensor.AddObservation(b)); //4
 
         // target location
-        sensor.AddObservation(target.transform.localPosition.x); //1
-        sensor.AddObservation(target.transform.localPosition.z); //1
+        sensor.AddObservation(target.transform.position.x); //1
+        sensor.AddObservation(target.transform.position.z); //1
 
         // goal info
-        sensor.AddObservation(goal.transform.localPosition.x); //1
-        sensor.AddObservation(goal.transform.localPosition.z); //1
+        sensor.AddObservation(goal.transform.position.x); //1
+        sensor.AddObservation(goal.transform.position.z); //1
 
         // Agent data
         sensor.AddObservation(HasResource); //1
-        sensor.AddObservation(transform.localPosition.x); //1
-        sensor.AddObservation(transform.localPosition.z); //1
+        sensor.AddObservation(transform.position.x); //1
+        sensor.AddObservation(transform.position.z); //1
         sensor.AddObservation(rBody.velocity.x); //1
         sensor.AddObservation(rBody.velocity.z); //1
         sensor.AddObservation((int)CurrentState); // 1
@@ -261,7 +258,6 @@ public class CollectorAgent : Agent
 
         if (!isResourceRequired)
         {
-            IsDoneJob = true;
             collectorAcademy.SetAgentTarget();
         }
     }

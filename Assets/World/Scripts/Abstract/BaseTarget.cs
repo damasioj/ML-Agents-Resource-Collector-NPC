@@ -4,23 +4,26 @@ using UnityEngine;
 
 public abstract class BaseTarget : MonoBehaviour
 {
+    public float range;
     public bool TargetHit { get; protected set; }
-    public Dictionary<string, float> BoundaryLimits { get; set; }
+    //public Dictionary<string, float> BoundaryLimits { get; set; }
     public abstract int ResourceCount { get; }
+    private float y;
 
     private void Awake()
     {
         TargetHit = false;
+        y = transform.position.y;
     }
 
     public virtual void Reset()
     {
-        gameObject.transform.localPosition =
+        gameObject.transform.position =
             new Vector3
             (
-                UnityEngine.Random.Range(BoundaryLimits["-X"], BoundaryLimits["X"]),
-                1f,
-                UnityEngine.Random.Range(BoundaryLimits["-Z"], BoundaryLimits["Z"])
+                UnityEngine.Random.Range(range * - 1, range),
+                y,
+                UnityEngine.Random.Range(range * -1, range)
             );
 
         TargetHit = false;

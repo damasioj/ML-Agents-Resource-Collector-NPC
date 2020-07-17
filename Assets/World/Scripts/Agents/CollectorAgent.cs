@@ -12,8 +12,9 @@ public class CollectorAgent : Agent
     private Rigidbody rBody;
     private BaseResource resource;
     private bool isDoneCalled;
-    private bool atResource;
+    private bool isAtResource;
     private int internalStepCount; // used in place of maxsteps
+    private float y;
     [SerializeField] private int maxInternalSteps;
 
     public float speed;
@@ -59,6 +60,7 @@ public class CollectorAgent : Agent
 
     void Start()
     {
+        y = transform.position.y;
         internalStepCount = 0;
         isDoneCalled = false;
         collectorAcademy = GetComponentInParent<CollectorAcademy>();
@@ -123,7 +125,7 @@ public class CollectorAgent : Agent
             case "target":
                 if (!HasResource && other.GetComponent<BaseTarget>().Equals(Target))
                 {
-                    atResource = true;
+                    isAtResource = true;
                 }
                 break;
             case "boundary":
@@ -141,7 +143,7 @@ public class CollectorAgent : Agent
     {
         if (other.CompareTag("target"))
         {
-            atResource = false;
+            isAtResource = false;
         }
     }
 
@@ -154,7 +156,7 @@ public class CollectorAgent : Agent
         {
             rBody.angularVelocity = Vector3.zero;
             rBody.velocity = Vector3.zero;
-            transform.localPosition = new Vector3(0, 1, 0);
+            transform.position = new Vector3(0, y, 0);
             currentState = States.Idle;
         }
         
@@ -183,7 +185,7 @@ public class CollectorAgent : Agent
         sensor.AddObservation(rBody.velocity.x); //1
         sensor.AddObservation(rBody.velocity.z); //1
         sensor.AddObservation((int)CurrentState); // 1
-        sensor.AddObservation(atResource); // 1
+        sensor.AddObservation(isAtResource); // 1
 
         // for debugging only
         //if (this.StepCount % 300 == 0)
@@ -226,7 +228,7 @@ public class CollectorAgent : Agent
 
     private void CollectResource()
     {
-        if (atResource && !HasResource)
+        if (isAtResource && !HasResource)
         {
             internalStepCount = 0;
             CurrentState = States.Collecting;
@@ -236,7 +238,7 @@ public class CollectorAgent : Agent
 
     private void TakeResource()
     {
-        if (atResource && !HasResource)
+        if (isAtResource && !HasResource)
         {
             resource = Target.GetResource();
 

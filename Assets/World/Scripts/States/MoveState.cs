@@ -14,30 +14,34 @@ public class MoveState : AgentState
 
     public override void DoAction(Agent owner, float[] vectorAction)
     {
-        var rBody = owner.GetComponent<Rigidbody>();
-
-        if (rBody is object)
+        if (owner is CollectorAgent collector)
         {
-            Vector3 controlSignal = Vector3.zero;
-            controlSignal.x = vectorAction[0];
-            controlSignal.z = vectorAction[1];
+            var rBody = owner.GetComponent<Rigidbody>();
+            var scale = collector.gameObject.transform.localScale.x;
 
-            if (rBody.velocity.x > 30)
+            if (rBody is object)
             {
-                controlSignal.x = 0;
-            }
-            if (rBody.velocity.z > 30)
-            {
-                controlSignal.z = 0;
+                Vector3 controlSignal = Vector3.zero;
+                controlSignal.x = vectorAction[0];
+                controlSignal.z = vectorAction[1];
+
+                if (rBody.velocity.x > collector.speed * scale)
+                {
+                    controlSignal.x = 0;
+                }
+                if (rBody.velocity.z > collector.speed * scale)
+                {
+                    controlSignal.z = 0;
+                }
+
+                rBody.AddForce(new Vector3(controlSignal.x * collector.speed * scale, 0, controlSignal.z * collector.speed * scale));
             }
 
-            rBody.AddForce(new Vector3(controlSignal.x * 750, 0, controlSignal.z * 750));
+            SetDirection(owner);
+            _lastPosition = owner.transform.position;
+
+            IsFinished = true;
         }
-
-        SetDirection(owner);
-        _lastPosition = owner.transform.position;
-
-        IsFinished = true;
     }
 
     public override void OnEnter(Agent owner)

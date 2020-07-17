@@ -10,7 +10,7 @@ default:
     lambd: 0.99
     learning_rate: 0.003
     learning_rate_schedule: constant
-    max_steps: 3e6
+    max_steps: 5e6
     memory_size: 16
     normalize: true
     num_epoch: 3

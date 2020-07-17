@@ -18,7 +18,8 @@ public abstract class BaseGoal : MonoBehaviour
                 UnityEngine.Random.Range(range * -1, range)
             );
 
-        float size = UnityEngine.Random.Range(1f, maxSize);
+        // this is for the agent to not become bias on the size of the goal
+        float size = UnityEngine.Random.Range(maxSize / 2, maxSize);
         gameObject.transform.localScale = new Vector3(size, size, size);
     }
 

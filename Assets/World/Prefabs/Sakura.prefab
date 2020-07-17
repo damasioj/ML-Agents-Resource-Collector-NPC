@@ -26,7 +26,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b08c1ca1fbf440f49a37296f56c0dfdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  woodAmount: 0
+  range: 500
 --- !u!1001 &671396842236354183
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -37,7 +37,7 @@ PrefabInstance:
     - target: {fileID: -927199367670048503, guid: cc39aaed3f46dc445956ebda4ad3cd90,
         type: 3}
       propertyPath: m_Name
-      value: ShagaraShagoora Variant
+      value: Sakura
       objectReference: {fileID: 0}
     - target: {fileID: -927199367670048503, guid: cc39aaed3f46dc445956ebda4ad3cd90,
         type: 3}
@@ -102,28 +102,28 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: cc39aaed3f46dc445956ebda4ad3cd90,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.75
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: cc39aaed3f46dc445956ebda4ad3cd90,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.75
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: cc39aaed3f46dc445956ebda4ad3cd90,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.75
+      value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: -1212445537685685361, guid: cc39aaed3f46dc445956ebda4ad3cd90,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 5734b760eb0744141aab8c8d733808cf, type: 2}
     - target: {fileID: 6619125073494723476, guid: cc39aaed3f46dc445956ebda4ad3cd90,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: b5dcb4321be3d014aaf89edb4cb9e2ea, type: 2}
+    - target: {fileID: -1212445537685685361, guid: cc39aaed3f46dc445956ebda4ad3cd90,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 5734b760eb0744141aab8c8d733808cf, type: 2}
     - target: {fileID: 8304545770963488453, guid: cc39aaed3f46dc445956ebda4ad3cd90,
         type: 3}
       propertyPath: m_Materials.Array.data[0]

@@ -59,47 +59,6 @@ public class CollectorAcademy : MonoBehaviour
         return targets.Where(t => t.ResourceCount > 0);
     }
 
-    //private Dictionary<string, float> GetBoundaryLimits()
-    //{
-    //    var limits = new Dictionary<string, float>()
-    //    {
-    //        ["-X"] = 0,
-    //        ["X"] = 0,
-    //        ["-Z"] = 0,
-    //        ["Z"] = 0
-    //    };
-
-    //    var boundaries = gameObject.GetComponentsInChildren(typeof(BoxCollider)).Where(x => x.CompareTag("boundary")).ToList();
-    //    foreach (var boundary in boundaries)
-    //    {
-    //        float x = boundary.gameObject.transform.localPosition.x;
-    //        float z = boundary.gameObject.transform.localPosition.z;
-    //        float lengthAdjust = boundary.gameObject.transform.localScale.y * 2;
-
-    //        // set X boundary
-    //        if (x > limits["X"] || limits["X"] == 0)
-    //        {
-    //            limits["X"] = x - lengthAdjust;
-    //        }
-    //        if (x < limits["-X"] || limits["-X"] == 0)
-    //        {
-    //            limits["-X"] = x + lengthAdjust;
-    //        }
-
-    //        // set Z boundary
-    //        if (z > limits["Z"] || limits["Z"] == 0)
-    //        {
-    //            limits["Z"] = z - lengthAdjust;
-    //        }
-    //        if (z < limits["-Z"] || limits["-Z"] == 0)
-    //        {
-    //            limits["-Z"] = z + lengthAdjust;
-    //        }
-    //    }
-
-    //    return limits;
-    //}
-
     // temporary setup used for training
     private void SetResourceRequirements()
     {

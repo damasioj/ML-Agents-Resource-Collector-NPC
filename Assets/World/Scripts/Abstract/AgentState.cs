@@ -4,6 +4,9 @@ using UnityEngine;
 
 public abstract class AgentState
 {
+    /// <summary>
+    /// Defines if the state has finished its action and can be changed.
+    /// </summary>
     public abstract bool IsFinished { get; protected set; }
     public abstract void OnEnter(Agent owner); // Runs once at the beginning.
     public abstract void OnUpdate(Agent owner); // Runs every frame when state is active.

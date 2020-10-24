@@ -15,6 +15,7 @@ public class CollectorAgent : Agent
     private bool isAtResource;
     private int internalStepCount; // used in place of maxsteps
     private float y;
+    private readonly object dataLock = new object();
     [SerializeField] private int maxInternalSteps;
 
     public float speed;
@@ -22,8 +23,6 @@ public class CollectorAgent : Agent
 
     #region properties
     private bool HasResource => resource is object;
-
-    [HideInInspector] public Dictionary<string, float> BoundaryLimits { get; set; }
     
     private BaseTarget target;
     [HideInInspector] public BaseTarget Target
@@ -40,7 +39,7 @@ public class CollectorAgent : Agent
     }
 
     private States currentState;
-    public States CurrentState // TODO :  refactor this property to agent class
+    public States CurrentState // Refactored in EcoSystem project
     {
         get
         {
@@ -149,61 +148,63 @@ public class CollectorAgent : Agent
 
     public override void OnEpisodeBegin()
     {
-        SetReward(0f);
-        internalStepCount = 0;
-        
-        if (!goal.IsComplete)
+        lock (dataLock)
         {
-            rBody.angularVelocity = Vector3.zero;
-            rBody.velocity = Vector3.zero;
-            transform.position = new Vector3(0, y, 0);
-            currentState = States.Idle;
+            SetReward(0f);
+            internalStepCount = 0;
+
+            if (!goal.IsComplete)
+            {
+                rBody.angularVelocity = Vector3.zero;
+                rBody.velocity = Vector3.zero;
+                transform.position = new Vector3(0, y, 0);
+                currentState = States.Idle;
+            }
+
+            collectorAcademy.EnvironmentReset(); // This is refactored on EcoSystem project
+            resource = null;
+            isDoneCalled = false;
         }
-        
-        collectorAcademy.EnvironmentReset(); // TODO : find a way to refactor this ... agent shouldn't call academy functions
-        resource = null;
-        isDoneCalled = false;
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        // boundaries
-        //BoundaryLimits.Values.ToList().ForEach(b => sensor.AddObservation(b)); //4
+        lock (dataLock)
+        {
+            // target location
+            sensor.AddObservation(target.Location.x); //1
+            sensor.AddObservation(target.Location.z); //1
 
-        // target location
-        sensor.AddObservation(target.transform.position.x); //1
-        sensor.AddObservation(target.transform.position.z); //1
+            // goal info
+            sensor.AddObservation(goal.Location.x); //1
+            sensor.AddObservation(goal.Location.z); //1
 
-        // goal info
-        sensor.AddObservation(goal.transform.position.x); //1
-        sensor.AddObservation(goal.transform.position.z); //1
-
-        // Agent data
-        sensor.AddObservation(HasResource); //1
-        sensor.AddObservation(transform.position.x); //1
-        sensor.AddObservation(transform.position.z); //1
-        sensor.AddObservation(rBody.velocity.x); //1
-        sensor.AddObservation(rBody.velocity.z); //1
-        sensor.AddObservation((int)CurrentState); // 1
-        sensor.AddObservation(isAtResource); // 1
-
-        // for debugging only
-        //if (this.StepCount % 300 == 0)
-        //{
-        //    Debug.Log($"TARGET || Name: {target.name} X: {target.transform.position.x}, Z: {target.transform.position.z}");
-        //    Debug.Log($"GOAL || X: {goal.transform.position.x}, Z: {goal.transform.position.z}");
-        //    Debug.Log($"GOAL || Resources Required: {goal.GetResourcesRequired().First(g => g.Key == target.GetResourceType()).Value}");
-        //    Debug.Log($"AGENT || IsDoneJob: {IsDoneJob}, HasResource: {HasResource}");
-        //    Debug.Log($"AGENT || X: {transform.position.x}, Z: {transform.position.z}, Velocity X: {rBody.velocity.x}, Velocity Z: {rBody.velocity.z}");
-        //}
+            // Agent data
+            sensor.AddObservation(HasResource); //1
+            sensor.AddObservation(transform.localPosition.x); //1
+            sensor.AddObservation(transform.localPosition.z); //1
+            sensor.AddObservation(rBody.velocity.x); //1
+            sensor.AddObservation(rBody.velocity.z); //1
+            sensor.AddObservation((int)CurrentState); // 1
+            sensor.AddObservation(isAtResource); // 1
+        }
     }
 
     public override void OnActionReceived(float[] vectorAction)
     {
+        // some trials bug and send NaN, this is to ignore it
+        if (float.IsNaN(vectorAction[0])
+            || float.IsNaN(vectorAction[1])
+            || float.IsNaN(vectorAction[2]))
+        {
+            Debug.Log("Received NaN for action...");
+            return;
+        }
+
         //refactor
         if (stateDictionary[CurrentState].IsFinished)
         {
-            CollectResource();
+            CollectResource(vectorAction);
         }
         
         if (stateDictionary[CurrentState].IsFinished)
@@ -226,9 +227,11 @@ public class CollectorAgent : Agent
         stateDictionary[CurrentState].DoAction(this, vectorAction);
     }
 
-    private void CollectResource()
+    private void CollectResource(float[] vectorAction)
     {
-        if (isAtResource && !HasResource)
+        if (isAtResource 
+            && !HasResource
+            && Convert.ToBoolean(vectorAction[2]))
         {
             internalStepCount = 0;
             CurrentState = States.Collecting;
@@ -278,6 +281,7 @@ public class CollectorAgent : Agent
     {
         actions[0] = Input.GetAxis("Horizontal");
         actions[1] = Input.GetAxis("Vertical");
+        actions[2] = Convert.ToSingle(Input.GetKeyDown(KeyCode.E));
     }
 
     private void SubtractReward(float value) // TODO : add to agent class

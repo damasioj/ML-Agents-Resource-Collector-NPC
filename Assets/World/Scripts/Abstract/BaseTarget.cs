@@ -6,19 +6,18 @@ public abstract class BaseTarget : MonoBehaviour
 {
     public float range;
     public bool TargetHit { get; protected set; }
-    //public Dictionary<string, float> BoundaryLimits { get; set; }
     public abstract int ResourceCount { get; }
     private float y;
 
     private void Awake()
     {
         TargetHit = false;
-        y = transform.position.y;
+        y = transform.localPosition.y;
     }
 
     public virtual void Reset()
     {
-        gameObject.transform.position =
+        gameObject.transform.localPosition =
             new Vector3
             (
                 UnityEngine.Random.Range(range * - 1, range),
@@ -38,11 +37,11 @@ public abstract class BaseTarget : MonoBehaviour
     {
         get
         {
-            return gameObject.transform.position;
+            return gameObject.transform.localPosition;
         }
         private set
         {
-            gameObject.transform.position = value;
+            gameObject.transform.localPosition = value;
         }
     }
 

@@ -20,13 +20,12 @@ public class CollectorAcademy : MonoBehaviour
 
     void Start()
     {
-        //boundaryLimits = GetBoundaryLimits();
         agent = gameObject.GetComponentInChildren<CollectorAgent>();
         targets = gameObject.GetComponentsInChildren<BaseTarget>().ToList();
         goal = gameObject.GetComponentInChildren<BaseGoal>();
 
-        agent.BoundaryLimits = boundaryLimits;
-        //targets.ForEach(t => t.BoundaryLimits = boundaryLimits);
+        SetResourceRequirements();
+        SetAgentTarget();
     }
 
     public void EnvironmentReset()

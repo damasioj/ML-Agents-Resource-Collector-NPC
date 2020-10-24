@@ -16,7 +16,7 @@ public class CollectingState : AgentState
 
     public override void DoAction(Agent owner)
     {
-        return;
+        actionToExecute();
     }
 
     public override void DoAction(Agent owner, float[] vectorActions)
@@ -38,13 +38,11 @@ public class CollectingState : AgentState
 
     public override void OnFixedUpdate(Agent owner)
     {
-        if (owner.StepCount - counter >= 50)
+        if (owner.StepCount - counter >= 50) // an easy way to create a "delay"
         {
-            actionToExecute();
+            DoAction(owner);
             IsFinished = true;
 
-            // TODO : refactor CurrentState location ... this will be huge problem.
-            // State property needs to be added to Agent class
             if (owner is CollectorAgent collector)
             {
                 collector.CurrentState = States.Idle;

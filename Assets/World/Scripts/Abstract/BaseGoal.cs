@@ -10,11 +10,11 @@ public abstract class BaseGoal : MonoBehaviour
 
     public virtual void Reset()
     {
-        gameObject.transform.position =
+        gameObject.transform.localPosition =
             new Vector3
             (
                 UnityEngine.Random.Range(range * -1, range),
-                transform.position.y,
+                transform.localPosition.y,
                 UnityEngine.Random.Range(range * -1, range)
             );
 
@@ -27,11 +27,11 @@ public abstract class BaseGoal : MonoBehaviour
     {
         get
         {
-            return gameObject.transform.position;
+            return gameObject.transform.localPosition;
         }
         private set
         {
-            gameObject.transform.position = value;
+            gameObject.transform.localPosition = value;
         }
     }
 

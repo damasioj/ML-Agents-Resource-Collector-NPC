@@ -28,7 +28,7 @@ public class StoneTarget : BaseTarget
         return StoneResources.Take();
     }
 
-    public override void SetResourceAmount(Dictionary<Type, int> resourceData)
+    public override void SetResourceAmount(IDictionary<Type, int> resourceData)
     {
         if (resourceData.ContainsKey(typeof(StoneResource)))
         {

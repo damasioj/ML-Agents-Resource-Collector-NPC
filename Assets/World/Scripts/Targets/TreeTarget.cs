@@ -28,7 +28,7 @@ public class TreeTarget : BaseTarget
         return WoodResources.Take();
     }
 
-    public override void SetResourceAmount(Dictionary<Type, int> resourceData)
+    public override void SetResourceAmount(IDictionary<Type, int> resourceData)
     {
         if (resourceData.ContainsKey(typeof(WoodResource)))
         {

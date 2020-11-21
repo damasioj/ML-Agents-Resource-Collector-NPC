@@ -112,7 +112,7 @@ public class CollectorAgent : Agent
             case "goal":
                 if (HasResource)
                 {
-                    AddReward(0.5f);
+                    AddReward(0.2f);
                     var deposit = other.gameObject.GetComponent(typeof(BaseGoal)) as BaseGoal;
                     deposit.AddResource(ref resource);
                     ValidateJobComplete();
@@ -193,18 +193,17 @@ public class CollectorAgent : Agent
     public override void OnActionReceived(float[] vectorAction)
     {
         // some trials bug and send NaN, this is to ignore it
-        if (float.IsNaN(vectorAction[0])
-            || float.IsNaN(vectorAction[1])
-            || float.IsNaN(vectorAction[2]))
-        {
-            Debug.Log("Received NaN for action...");
-            return;
-        }
+        //if (float.IsNaN(vectorAction[0])
+        //    || float.IsNaN(vectorAction[1]))
+        //{
+        //    Debug.Log("Received NaN for action...");
+        //    return;
+        //}
 
         //refactor
         if (stateDictionary[CurrentState].IsFinished)
         {
-            CollectResource(vectorAction);
+            CollectResource();
         }
         
         if (stateDictionary[CurrentState].IsFinished)
@@ -227,11 +226,9 @@ public class CollectorAgent : Agent
         stateDictionary[CurrentState].DoAction(this, vectorAction);
     }
 
-    private void CollectResource(float[] vectorAction)
+    private void CollectResource()
     {
-        if (isAtResource 
-            && !HasResource
-            && Convert.ToBoolean(vectorAction[2]))
+        if (isAtResource && !HasResource)
         {
             internalStepCount = 0;
             CurrentState = States.Collecting;
@@ -259,7 +256,7 @@ public class CollectorAgent : Agent
     /// </summary>
     protected void ValidateJobComplete()
     {
-        var isResourceRequired = goal.GetResourcesRequired().Any(g => g.Key == target.GetResourceType() && g.Value > 0);
+        var isResourceRequired = goal.GetResourceRequirements().Any(g => g.Key == target.GetResourceType() && g.Value > 0);
 
         if (!isResourceRequired)
         {
@@ -271,7 +268,8 @@ public class CollectorAgent : Agent
     {
         if(goal.IsComplete)
         {
-            AddReward(2.0f);
+            SubtractReward(GetCumulativeReward());
+            AddReward(5.0f);
             Debug.Log($"Current Reward: {GetCumulativeReward()}");
             EndEpisode();
         }
@@ -281,10 +279,9 @@ public class CollectorAgent : Agent
     {
         actions[0] = Input.GetAxis("Horizontal");
         actions[1] = Input.GetAxis("Vertical");
-        actions[2] = Convert.ToSingle(Input.GetKey(KeyCode.E));
     }
 
-    private void SubtractReward(float value) // TODO : add to agent class
+    private void SubtractReward(float value) 
     {
         AddReward(value * -1);
     }

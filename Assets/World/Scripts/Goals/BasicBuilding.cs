@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class BasicBuilding : BaseGoal
 {
-    private ResourceCollection<WoodResource> woodResources; // refactor : this could be scriptable object
+    // These can be changed to scriptable objects to be more dynamic
+    private ResourceCollection<WoodResource> woodResources; 
     private ResourceCollection<StoneResource> stoneResources;
 
-    private int woodRequired;
-    private int stoneRequired;
+    [SerializeField] private int woodRequired;
+    [SerializeField] private int stoneRequired;
 
     public override void Reset()
     {
@@ -26,7 +28,7 @@ public class BasicBuilding : BaseGoal
     }
 
     // TODO : refactor
-    public override IDictionary<Type, int> GetResourcesRequired()
+    public override IDictionary<Type, int> GetResourceRequirements()
     {
         return new Dictionary<Type, int>
         {

@@ -1,20 +1,16 @@
-﻿using Unity.MLAgents;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Unity.MLAgents;
 using UnityEngine;
 
 public class CollectorAcademy : MonoBehaviour
 {
-    private Academy collectorAcademy;
-    private Dictionary<string, float> boundaryLimits;
     private BaseGoal goal;
     private CollectorAgent agent;
     private List<BaseTarget> targets;
 
     private void Awake()
     {
-        collectorAcademy = Academy.Instance;
         Academy.Instance.OnEnvironmentReset += EnvironmentReset;
     }
 
@@ -58,21 +54,12 @@ public class CollectorAcademy : MonoBehaviour
         return targets.Where(t => t.ResourceCount > 0);
     }
 
-    // temporary setup used for training
+    /// <summary>
+    /// Sets target resource amount based on goal requirements.
+    /// </summary>
     private void SetResourceRequirements()
     {
-        int maxAmount = 4;//GetMaxResourceAmount();
-
-        int woodAmount = UnityEngine.Random.Range(1, maxAmount);
-        int stoneAmount = UnityEngine.Random.Range(1, maxAmount);
-
-        var requirements = new Dictionary<Type, int>
-        {
-            [typeof(WoodResource)] = woodAmount,
-            [typeof(StoneResource)] = stoneAmount
-        };
-
-        goal.SetResourceRequirements(requirements);
-        targets.ForEach(t => t.SetResourceAmount(requirements));
+        var requirements = goal.GetResourceRequirements();
+        targets.ForEach(t => t.SetResourceAmount(requirements));        
     }
 }

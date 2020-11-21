@@ -47,5 +47,5 @@ public abstract class BaseTarget : MonoBehaviour
 
     public abstract Type GetResourceType();
     public abstract BaseResource GetResource();
-    public abstract void SetResourceAmount(Dictionary<Type, int> resourceData);
+    public abstract void SetResourceAmount(IDictionary<Type, int> resourceData);
 }

@@ -50,6 +50,6 @@ public abstract class BaseGoal : MonoBehaviour
     /// Returns a dictionary with the type of resource required and the amount necessary to finish completion.
     /// </summary>
     /// <returns>IDictionary<Type, int></returns>
-    public abstract IDictionary<Type, int> GetResourcesRequired();
+    public abstract IDictionary<Type, int> GetResourceRequirements();
     public abstract void SetResourceRequirements(IDictionary<Type, int> requirements);
 }

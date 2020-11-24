@@ -2,7 +2,7 @@
 
 This project is being developed for a Master's thesis that studies the implementation of behaviours in subjects using Machine Learning. The Resource Collector project attempts to simulate the behaviour of "workers" tasked with collecting resources from their surroundings and bringing them to a centralized location. 
 
-The environment will have multiple targets to represent different kinds of resources, a goal to bring the resources known as the "resource depot", and at least two agents.
+The environment will have multiple targets to represent different kinds of resources and a goal where to return the resources. The agent must be flexible and not require retraining when task requirements (amounts and type of resources needed) change or when presented new targets.
 
 # Unity ML-Agents SDK
 
@@ -12,9 +12,8 @@ The project uses Unity ML-Agents to train agents.
 
 The following are the goals of this project:
 
-- [x] 1 Agent: collecting a resource and bringing it to the goal
-- [x] 1 Agent: collecting multiple different resources and bringing it to the goal
-- [ ] 2 Agents: collecting multiple different resources and bringing it to the goal
+- [x] Collecting a resource and bringing it to the goal
+- [x] Collecting multiple different resources and bringing it to the goal
 
 # Requirements
 

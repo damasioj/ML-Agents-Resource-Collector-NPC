@@ -181,8 +181,8 @@ public class CollectorAgent : Agent
 
             // Agent data
             sensor.AddObservation(HasResource); //1
-            sensor.AddObservation(transform.localPosition.x); //1
-            sensor.AddObservation(transform.localPosition.z); //1
+            sensor.AddObservation(transform.position.x); //1
+            sensor.AddObservation(transform.position.z); //1
             sensor.AddObservation(rBody.velocity.x); //1
             sensor.AddObservation(rBody.velocity.z); //1
             sensor.AddObservation((int)CurrentState); // 1
@@ -192,14 +192,6 @@ public class CollectorAgent : Agent
 
     public override void OnActionReceived(float[] vectorAction)
     {
-        // some trials bug and send NaN, this is to ignore it
-        //if (float.IsNaN(vectorAction[0])
-        //    || float.IsNaN(vectorAction[1]))
-        //{
-        //    Debug.Log("Received NaN for action...");
-        //    return;
-        //}
-
         //refactor
         if (stateDictionary[CurrentState].IsFinished)
         {

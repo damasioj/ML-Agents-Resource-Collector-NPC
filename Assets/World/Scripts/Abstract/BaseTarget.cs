@@ -37,11 +37,11 @@ public abstract class BaseTarget : MonoBehaviour
     {
         get
         {
-            return gameObject.transform.localPosition;
+            return gameObject.transform.position;
         }
         private set
         {
-            gameObject.transform.localPosition = value;
+            gameObject.transform.position = value;
         }
     }
 
